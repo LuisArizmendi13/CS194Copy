@@ -15,7 +15,7 @@ class Dish {
     sale_count() {
       return this.sales.length; // Return the number of sales
     } 
-    archive_(){ 
+    archive(){ 
       this.archive = true;
     }
   }
