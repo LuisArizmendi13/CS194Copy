@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dish } from '../classes/dish'; // Adjust import path if needed
+import { dynamoDb, TABLE_NAME } from '../aws-config';
 
 // Input Component
 const InputField = ({ label, value, setValue, placeholder }) => (
@@ -15,6 +16,32 @@ const InputField = ({ label, value, setValue, placeholder }) => (
   </div>
 );
 
+// Dish Box Component
+const DishBox = ({ dish }) => {
+  const [showIngredients, setShowIngredients] = useState(false);
+  return (
+    <div className="border rounded p-4 flex justify-between items-center mb-4 shadow">
+      <div>
+        <div className="text-lg font-bold">{dish.name}</div>
+        <div className="text-gray-600">${dish.price.toFixed(2)}</div>
+        {showIngredients && (
+          <ul className="mt-2">
+            {dish.ingredients.map((ing, index) => (
+              <li key={index} className="text-sm text-gray-600">- {ing}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <button
+        onClick={() => setShowIngredients(!showIngredients)}
+        className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900"
+      >
+        {showIngredients ? "Hide Ingredients" : "Show Ingredients"}
+      </button>
+    </div>
+  );
+};
+
 // Popup Component
 const AddDishPopup = ({ onClose, onSave }) => {
   const [name, setName] = useState("");
@@ -29,11 +56,20 @@ const AddDishPopup = ({ onClose, onSave }) => {
     }
   };
 
-  const saveDish = () => {
+  const saveDish = async () => {
     if (name && price && ingredients.length > 0) {
       const dish = new Dish(name, parseFloat(price), ingredients);
-      onSave(dish);
-      onClose();
+      const params = {
+        TableName: TABLE_NAME,
+        Item: { ...dish, dishId: `${Date.now()}` },
+      };
+      try {
+        await dynamoDb.put(params).promise();
+        onSave(dish);
+        onClose();
+      } catch (error) {
+        console.error("Error saving dish to DynamoDB:", error);
+      }
     } else {
       alert("Please fill in all fields and add at least one ingredient.");
     }
@@ -89,49 +125,37 @@ const AddDishPopup = ({ onClose, onSave }) => {
   );
 };
 
-// Dish Box Component
-const DishBox = ({ dish }) => {
-  const [showIngredients, setShowIngredients] = useState(false);
-
-  return (
-    <div className="border rounded p-4 flex justify-between items-center mb-4 shadow">
-      <div>
-        <div className="text-lg font-bold">{dish.name}</div>
-        <div className="text-gray-600">${dish.price.toFixed(2)}</div>
-        {showIngredients && (
-          <ul className="mt-2">
-            {dish.ingredients.map((ing, index) => (
-              <li key={index} className="text-sm text-gray-600">- {ing}</li>
-            ))}
-          </ul>
-        )}
-      </div>
-      <button
-        onClick={() => setShowIngredients(!showIngredients)}
-        className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900"
-      >
-        {showIngredients ? "Hide Ingredients" : "Show Ingredients"}
-      </button>
-    </div>
-  );
-};
-
 // Dishes Page Component
 const DishesPage = () => {
   const [dishes, setDishes] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const fetchDishes = async () => {
+      const params = { TableName: TABLE_NAME };
+      try {
+        const data = await dynamoDb.scan(params).promise();
+        if (data.Items) {
+          setDishes(data.Items);
+        }
+      } catch (error) {
+        console.error("Error fetching dishes from DynamoDB:", error);
+      }
+    };
+    fetchDishes();
+  }, []);
 
   const addDish = (dish) => {
     setDishes([...dishes, dish]);
   };
 
   return (
-    <div className="p-6" className="p-6 mx-auto" style={{ maxWidth: '1124px' }}>
-      <button onClick={() => setShowPopup(true)} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-6 float-right block"
-      >
+    <div className="p-6 mx-auto" style={{ maxWidth: '1124px' }}>
+      <button onClick={() => setShowPopup(true)} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-6 float-right block">
         + New Dish
       </button>
-      <div style={{ clear: 'both' }}></div>{dishes.map((dish, index) => (
+      <div style={{ clear: 'both' }}></div>
+      {dishes.map((dish, index) => (
         <DishBox key={index} dish={dish} />
       ))}
       {showPopup && (
