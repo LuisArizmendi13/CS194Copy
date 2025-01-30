@@ -33,7 +33,7 @@ const ArchivePage = () => {
   const handlePrevMonth = () => {
     setCurrentMonth(prevMonth => {
       if (prevMonth === 0) {
-        setCurrentYear(prevYear => prevYear - 1);
+        setCurrentYear(prevYear => currentYear - 1);
         return 11;
       }
       return prevMonth - 1;
@@ -43,7 +43,7 @@ const ArchivePage = () => {
   const handleNextMonth = () => {
     setCurrentMonth(prevMonth => {
       if (prevMonth === 11) {
-        setCurrentYear(prevYear => prevYear + 1);
+        setCurrentYear(prevYear => currentYear + 1);
         return 0;
       }
       return prevMonth + 1;
