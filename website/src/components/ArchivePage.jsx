@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+
 
 const ArchivePage = () => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -53,11 +55,13 @@ const ArchivePage = () => {
   const handleDateClick = (day) => {
     if (day !== null) {
       const selected = new Date(currentYear, currentMonth, day);
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      setSelectedDate(selected.toLocaleDateString(undefined, options));
-      setShowModal(true);
+      const formattedDate = selected.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+      return `/menu?date=${formattedDate}`;
     }
+    return null;
   };
+  
+  
 
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -77,17 +81,19 @@ const ArchivePage = () => {
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
               <div key={day} className="text-center font-semibold text-gray-600">{day}</div>
             ))}
-            {calendarDays.map((day, index) => (
-              <div
-                key={index}
-                className={`cursor-pointer text-center py-2 ${
-                  day ? 'hover:bg-gray-200' : ''
-                } ${day === null ? 'text-gray-300' : 'text-gray-700'}`}
-                onClick={() => handleDateClick(day)}
-              >
-                {day}
-              </div>
-            ))}
+
+{calendarDays.map((day, index) => (
+  <Link
+    key={index}
+    to={handleDateClick(day)}
+    className={`cursor-pointer text-center py-2 ${
+      day ? 'hover:bg-gray-200' : ''
+    } ${day === null ? 'text-gray-300' : 'text-gray-700'}`}
+  >
+    <div>{day}</div>
+  </Link>
+))}
+
           </div>
         </div>
       </div>
