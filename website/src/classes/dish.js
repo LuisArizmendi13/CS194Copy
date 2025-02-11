@@ -15,16 +15,17 @@ class Dish {
     sale_count() {
       return this.sales.length; // Return the number of sales
     } 
-    archive_(){ 
+    archive(){ 
       this.archive = true;
     }
   }
   
   class Sale {
-    constructor(dish, time = new Date()) {
+    constructor(dish, location, time = new Date()) {
       this.time = time; // Time sale was made
       this.price = dish.price; // Price of the dish sold
       this.dish_name = dish.name; // Name of the dish sold
+      this.location = location; 
     }
   }
   
