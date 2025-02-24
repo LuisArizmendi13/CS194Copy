@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Navbar } from "./components/navbar"; // Adjust path as needed
 import DishesPage from "./Pages/DishesPage"; // Import the DishesPage component
 import LiveMenuPage from "./Pages/LiveMenuPage";
+import myMenusPage from "./Pages/myMenus";
 import ArchivePage from "./components/ArchivePage";
 import AnalyticsPage from "./components/Analytics/AnalyticsPage";
 
@@ -17,7 +18,7 @@ const App = () => (
         path="/"
         element={<div className="p-4">Welcome to the Home Page</div>}
       />
-      <Route path="/menus" element={<div className="p-4"></div>} />
+      <Route path="/menus" element={<myMenusPage />} />
       <Route path="/menu" element={<LiveMenuPage />} />
       <Route path="/dishes" element={<DishesPage />} />
       <Route path="/analytics" element={<AnalyticsPage />} />{" "}
