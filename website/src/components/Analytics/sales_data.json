@@ -1,0 +1,195 @@
+[
+  {
+    "name": "Margherita Pizza",
+    "price": 15,
+    "ingredients": ["Tomato Sauce", "Mozzarella", "Basil"],
+    "sales": [
+      {
+        "time": "2025-01-05T11:30:00",
+        "price": 15,
+        "dish_name": "Margherita Pizza",
+        "location": {
+          "name": "Downtown Restaurant",
+          "address": "123 Main St, San Francisco, CA 94101",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94101"
+        }
+      },
+      {
+        "time": "2025-02-12T18:20:00",
+        "price": 15,
+        "dish_name": "Margherita Pizza",
+        "location": {
+          "name": "Uptown Bistro",
+          "address": "456 Elm St, San Francisco, CA 94102",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94102"
+        }
+      },
+      {
+        "time": "2025-03-20T21:10:00",
+        "price": 15,
+        "dish_name": "Margherita Pizza",
+        "location": {
+          "name": "Midtown Café",
+          "address": "789 Oak St, San Francisco, CA 94103",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94103"
+        }
+      }
+    ],
+    "archive": false
+  },
+  {
+    "name": "Spaghetti Carbonara",
+    "price": 18,
+    "ingredients": ["Pasta", "Egg", "Pancetta", "Parmesan"],
+    "sales": [
+      {
+        "time": "2025-01-15T12:15:00",
+        "price": 18,
+        "dish_name": "Spaghetti Carbonara",
+        "location": {
+          "name": "Downtown Restaurant",
+          "address": "123 Main St, San Francisco, CA 94101",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94101"
+        }
+      },
+      {
+        "time": "2025-02-28T19:45:00",
+        "price": 18,
+        "dish_name": "Spaghetti Carbonara",
+        "location": {
+          "name": "Uptown Bistro",
+          "address": "456 Elm St, San Francisco, CA 94102",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94102"
+        }
+      },
+      {
+        "time": "2025-03-08T20:30:00",
+        "price": 18,
+        "dish_name": "Spaghetti Carbonara",
+        "location": {
+          "name": "Midtown Café",
+          "address": "789 Oak St, San Francisco, CA 94103",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94103"
+        }
+      },
+      {
+        "time": "2025-03-08T20:30:00",
+        "price": 18,
+        "dish_name": "Spaghetti Carbonara",
+        "location": {
+          "name": "Midtown Café",
+          "address": "789 Oak St, San Francisco, CA 94103",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94103"
+        }
+      }
+    ],
+    "archive": false
+  },
+  {
+    "name": "Caesar Salad",
+    "price": 12,
+    "ingredients": [
+      "Romaine Lettuce",
+      "Croutons",
+      "Caesar Dressing",
+      "Parmesan"
+    ],
+    "sales": [
+      {
+        "time": "2025-01-07T13:00:00",
+        "price": 12,
+        "dish_name": "Caesar Salad",
+        "location": {
+          "name": "Midtown Café",
+          "address": "789 Oak St, San Francisco, CA 94103",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94103"
+        }
+      },
+      {
+        "time": "2025-02-16T20:45:00",
+        "price": 12,
+        "dish_name": "Caesar Salad",
+        "location": {
+          "name": "Downtown Restaurant",
+          "address": "123 Main St, San Francisco, CA 94101",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94101"
+        }
+      },
+      {
+        "time": "2025-03-10T15:15:00",
+        "price": 12,
+        "dish_name": "Caesar Salad",
+        "location": {
+          "name": "Uptown Bistro",
+          "address": "456 Elm St, San Francisco, CA 94102",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94102"
+        }
+      }
+    ],
+    "archive": false
+  },
+  {
+    "name": "Cheeseburger",
+    "price": 14,
+    "ingredients": ["Beef Patty", "Cheese", "Lettuce", "Tomato", "Bun"],
+    "sales": [
+      {
+        "time": "2025-01-18T12:45:00",
+        "price": 14,
+        "dish_name": "Cheeseburger",
+        "location": {
+          "name": "Uptown Bistro",
+          "address": "456 Elm St, San Francisco, CA 94102",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94102"
+        }
+      },
+      {
+        "time": "2025-02-22T14:50:00",
+        "price": 14,
+        "dish_name": "Cheeseburger",
+        "location": {
+          "name": "Midtown Café",
+          "address": "789 Oak St, San Francisco, CA 94103",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94103"
+        }
+      },
+      {
+        "time": "2025-03-29T19:10:00",
+        "price": 14,
+        "dish_name": "Cheeseburger",
+        "location": {
+          "name": "Downtown Restaurant",
+          "address": "123 Main St, San Francisco, CA 94101",
+          "city": "San Francisco",
+          "state": "CA",
+          "zipcode": "94101"
+        }
+      }
+    ],
+    "archive": false
+  }
+]
