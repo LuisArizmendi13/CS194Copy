@@ -1,3 +1,5 @@
+import requests
+
 // utils/processSalesData.js
 export function processSalesData(rawData) {
   return rawData.map((dish) => {
@@ -67,6 +69,90 @@ function getMonth(date) {
     "November",
     "December",
   ][date.getMonth()];
+}
+const API_KEY = '1773fa0734e1ab6c35a49bcc67d52198';
+
+async function getLocation(location) {
+  const url = `http://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=5&appid=${API_KEY}`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data && data.length > 0) {
+      return {
+        latitude: data[0].lat,
+        longitude: data[0].lon
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching location:', error);
+    return null;
+  }
+}
+
+async function getWeather(date, location) {
+  const coords = await getLocation(location);
+  if (!coords) {
+    return "Location not found";
+  }
+
+  const { latitude, longitude } = coords;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weathercode`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch weather data');
+    }
+    const data = await response.json();
+
+    const { time, temperature_2m, weathercode } = data.hourly;
+    const dateIndex = time.findIndex(t => t.startsWith(date));
+
+    if (dateIndex === -1) {
+      return "Date not found in forecast";
+    }
+
+    const condition = weathercode[dateIndex];
+    return getWeatherDescription(condition);
+  } catch (error) {
+    console.error('Error fetching weather:', error);
+    return "Failed to fetch weather data";
+  }
+}
+
+function getWeatherDescription(condition) {
+  const weatherCodes = {
+    0: "Clear sky",
+    1: "Mainly clear",
+    2: "Partly cloudy",
+    3: "Overcast",
+    45: "Fog",
+    48: "Fog",
+    51: "Drizzle",
+    53: "Drizzle",
+    55: "Drizzle",
+    56: "Freezing Drizzle",
+    57: "Freezing Drizzle",
+    61: "Rain",
+    63: "Rain",
+    65: "Rain",
+    66: "Freezing Rain",
+    67: "Freezing Rain",
+    71: "Snow",
+    73: "Snow",
+    75: "Snow",
+    77: "Snow",
+    80: "Rain",
+    81: "Rain",
+    82: "Rain",
+    85: "Snow",
+    86: "Snow",
+    95: "Thunderstorm",
+    96: "Thunderstorm",
+    99: "Thunderstorm"
+  };
+  return weatherCodes[condition] || "Unknown";
 }
 
 // Simulated weather based on date (can be replaced with real API)
