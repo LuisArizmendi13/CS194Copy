@@ -1,47 +1,87 @@
 import React, { useState, useEffect } from 'react';
-import { dynamoDb, TABLE_NAME } from '../aws-config';
+import { dynamoDb, TABLE_NAME, getUserRestaurantId } from '../aws-config';
+import { useAuth } from '../context/AuthContext';
 import AddDishPopup from '../components/AddDishPopup';
 import DishList from '../components/DishList';
 
 const DishesPage = () => {
+  const { user, session } = useAuth(); // ✅ Get session from AuthContext
   const [dishes, setDishes] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
+    if (!user || !session) return; // Ensure user is authenticated
+
     const fetchDishes = async () => {
       try {
-        const data = await dynamoDb.scan({ TableName: TABLE_NAME }).promise();
-        if (data.Items) setDishes(data.Items);
+        const restaurantId = getUserRestaurantId(session); // ✅ Use session now stored in AuthContext
+        if (!restaurantId) {
+          console.warn("❌ No restaurantId found in session!");
+          return;
+        }
+
+        //console.log(`✅ Fetching dishes for restaurant: ${restaurantId}`);
+
+        const params = {
+          TableName: TABLE_NAME,
+          FilterExpression: "restaurantId = :rId",
+          ExpressionAttributeValues: { ":rId": restaurantId }
+        };
+
+        const data = await dynamoDb.scan(params).promise();
+        if (data.Items) {
+          //console.log("✅ Fetched Dishes:", data.Items);
+          setDishes(data.Items);
+        } else {
+          console.log("⚠️ No dishes found for this restaurant.");
+        }
       } catch (error) {
-        console.error("Error fetching dishes from DynamoDB:", error);
+        console.error("❌ Error fetching dishes from DynamoDB:", error);
       }
     };
-    fetchDishes();
-  }, []);
 
-  const addDish = (dish) => setDishes([...dishes, dish]);
+    fetchDishes();
+  }, [user, session]);
+
+  const addDish = async (dish) => {
+    try {
+      const restaurantId = getUserRestaurantId(session);
+      if (!restaurantId) {
+        console.error("❌ Cannot save dish: No restaurantId found!");
+        return;
+      }
+
+      const dishWithRestaurant = { ...dish, restaurantId };
+      await dynamoDb.put({ TableName: TABLE_NAME, Item: dishWithRestaurant }).promise();
+      setDishes([...dishes, dishWithRestaurant]);
+    } catch (error) {
+      console.error("Error saving dish:", error);
+    }
+  };
 
   const updateSaleCount = (dishId, updatedSales) => {
     setDishes(prevDishes =>
-      prevDishes.map(d =>
-        d.dishId === dishId ? { ...d, sales: updatedSales } : d
-      )
+      prevDishes.map(d => (d.dishId === dishId ? { ...d, sales: updatedSales } : d))
     );
   };
 
   return (
     <div className="p-6 mx-auto" style={{ maxWidth: '1124px' }}>
-      {/* Wrapper for Button (top-right) */}
       <div className="flex justify-end mb-4">
         <button onClick={() => setShowPopup(true)} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
           + New Dish
         </button>
       </div>
 
-      {/* All Dishes Appear Below */}
-      <DishList dishes={dishes} onArchiveChange={(id, status) => {
-        setDishes(prevDishes => prevDishes.map(d => d.dishId === id ? { ...d, archive: status } : d));
-      }} onSaleRecorded={updateSaleCount} />
+      <DishList
+        dishes={dishes}
+        onArchiveChange={(id, status) =>
+          setDishes(prevDishes =>
+            prevDishes.map(d => (d.dishId === id ? { ...d, archive: status } : d))
+          )
+        }
+        onSaleRecorded={updateSaleCount}
+      />
 
       {showPopup && <AddDishPopup onClose={() => setShowPopup(false)} onSave={addDish} />}
     </div>

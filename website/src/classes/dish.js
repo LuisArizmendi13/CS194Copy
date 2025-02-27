@@ -19,13 +19,17 @@ class Dish {
       this.archive = true;
     }
   }
-  
+  // TODO: make menu link to the curr live menu 
+
+  //TODO: sales vs time, menu vs sales, dish over time 
+  //TODO: 
   class Sale {
-    constructor(dish, location, time = new Date()) {
+    constructor(dish, location, time = new Date(), menu) {
       this.time = time; // Time sale was made
       this.price = dish.price; // Price of the dish sold
       this.dish_name = dish.name; // Name of the dish sold
       this.location = location; 
+      this.menu = menu
     }
   }
   
