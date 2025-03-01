@@ -17,6 +17,7 @@ export function processSalesData(rawData) {
       totalProfit,
       sales: dish.sales.map((sale) => {
         const saleDate = new Date(sale.time);
+        const location =  sale.location
         return {
           ...sale,
           derived: {
@@ -73,16 +74,17 @@ export function getMonth(date) {
 const API_KEY = '1773fa0734e1ab6c35a49bcc67d52198';
 
 export async function getLocation(location) {
-  const { city, state } = location;
+  const city = location.city
+  const state = location.state
   const url = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${state},US&limit=1&appid=${API_KEY}`;
   try {
     const response = await fetch(url);
     const data = await response.json();
     if (data && data.length > 0) {
       return {
-        latitude: data[0].lat,
-        longitude: data[0].lon
-      };
+      latitude : data[0].lat,
+      longitude : data[0].lon
+    };
     }
     return null;
   } catch (error) {
@@ -93,18 +95,12 @@ export async function getLocation(location) {
 
 
 export async function getWeather(date, location) {
-    const coords = await getLocation(location);
-    
-    if (!coords || !coords.latitude || !coords.longitude) {
-      return "Location not found";
-    }
-    
-    const { latitude, longitude } = coords;
+  const coords = await getLocation(location);
   
-  if (!latitude || !longitude) {
+  if (!coords || !coords.latitude || !coords.longitude) {
     return "Location not found";
   }
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&start_date=${date}&end_date=${date}&hourly=temperature_2m,weathercode`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&start_date=${date}&end_date=${date}&hourly=temperature_2m,weathercode`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
