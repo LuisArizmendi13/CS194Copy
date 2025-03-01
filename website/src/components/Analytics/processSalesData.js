@@ -99,6 +99,9 @@ async function getWeather(date, location) {
 export async function getWeather(date, location) {
   const coords = await getLocation(location);
   
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   if (!coords) {
     return "Location not found";
@@ -106,9 +109,12 @@ export async function getWeather(date, location) {
 
   const { latitude, longitude } = coords;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weathercode`;
 
 =======
+=======
+>>>>>>> Stashed changes
 
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&start_date=${date}&end_date=${date}&hourly=temperature_2m,weathercode`;
 >>>>>>> Stashed changes
@@ -135,8 +141,11 @@ export async function getWeather(date, location) {
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 function getWeatherDescription(condition) {
 =======
+=======
+>>>>>>> Stashed changes
 
 export function getWeatherDescription(condition) {
 >>>>>>> Stashed changes
