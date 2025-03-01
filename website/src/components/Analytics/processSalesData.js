@@ -17,13 +17,14 @@ export function processSalesData(rawData) {
       totalProfit,
       sales: dish.sales.map((sale) => {
         const saleDate = new Date(sale.time);
+        const location = new sale.location
         return {
           ...sale,
           derived: {
             time_of_day: getTimeOfDay(saleDate),
             day_of_week: getDayOfWeek(saleDate),
             month: getMonth(saleDate),
-            weather_condition: simulateWeather(saleDate),
+            weather_condition: getWeather(saleDate, location),
           },
         };
       }),
@@ -90,15 +91,27 @@ async function getLocation(location) {
   }
 }
 
+<<<<<<< Updated upstream
 async function getWeather(date, location) {
   const coords = await getLocation(location);
+=======
+
+export async function getWeather(date, location) {
+  const coords = await getLocation(location);
+  
+>>>>>>> Stashed changes
   if (!coords) {
     return "Location not found";
   }
 
   const { latitude, longitude } = coords;
+<<<<<<< Updated upstream
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weathercode`;
 
+=======
+
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&start_date=${date}&end_date=${date}&hourly=temperature_2m,weathercode`;
+>>>>>>> Stashed changes
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -121,7 +134,12 @@ async function getWeather(date, location) {
   }
 }
 
+<<<<<<< Updated upstream
 function getWeatherDescription(condition) {
+=======
+
+export function getWeatherDescription(condition) {
+>>>>>>> Stashed changes
   const weatherCodes = {
     0: "Clear sky",
     1: "Mainly clear",
