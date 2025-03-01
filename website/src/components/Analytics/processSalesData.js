@@ -17,7 +17,7 @@ export function processSalesData(rawData) {
       totalProfit,
       sales: dish.sales.map((sale) => {
         const saleDate = new Date(sale.time);
-        const location =  sale.location
+        const location = sale.location
         return {
           ...sale,
           derived: {
