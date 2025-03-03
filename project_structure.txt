@@ -87,6 +87,12 @@
     │   │   ├── Analytics
     │   │   │   ├── AnalyticsPage.jsx
     │   │   │   ├── Charts
+    │   │   │   │   ├── BestSellingChart.jsx
+    │   │   │   │   ├── RevenueProfitChart.jsx
+    │   │   │   │   ├── SalesByDayChart.jsx
+    │   │   │   │   ├── SalesByTimeOfDayChart.jsx
+    │   │   │   │   ├── SalesTrendChart.jsx
+    │   │   │   │   └── SeasonalPerformanceChart.jsx
     │   │   │   ├── processSalesData.js
     │   │   │   └── sales_data.json
     │   │   ├── Calendar
@@ -106,7 +112,8 @@
     │   │   │   ├── MenuList.jsx
     │   │   │   └── NewMenuButton.jsx
     │   │   ├── Navbar.jsx
-    │   │   └── NewDishButton.jsx
+    │   │   ├── NewDishButton.jsx
+    │   │   └── SelectableDishList.jsx
     │   ├── constants
     │   │   └── names.js
     │   ├── context
@@ -120,4 +127,4 @@
     ├── src.zip
     └── tailwind.config.js
 
-25 directories, 96 files
+25 directories, 103 files
