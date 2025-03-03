@@ -71,48 +71,46 @@ describe('getLocation', () => {
       expect(result).toBeNull();
     });
   });
-  
   describe('getWeather', () => {
     beforeEach(() => {
-      jest.spyOn(processSalesDataModule, 'getLocation').mockResolvedValue({ latitude: 40.7128, longitude: -74.0060 });
       global.fetch = jest.fn();
     });
   
-    test('returns weather description for valid date and location', async () => {
-      global.fetch.mockResolvedValueOnce({
+    test('returns weather description for valid location', async () => {
+      const mockResponse = {
         ok: true,
         json: jest.fn().mockResolvedValue({
-          hourly: {
-            time: ['2025-03-01T12:00'],
-            temperature_2m: [20],
-            weathercode: [0]
+          current: {
+            condition: {
+              code: 1000
+            }
           }
         })
-      });
+      };
+      global.fetch.mockResolvedValue(mockResponse);
   
-      const result = await getWeather('2025-03-01', { city: 'New York', state: 'NY' });
-      expect(result).toBe('Clear sky');
-    });
- 
-  
-    test('returns "Date not found in forecast" when date is not in the API response', async () => {
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValue({
-          hourly: {
-            time: ['2025-03-02T12:00'],
-            temperature_2m: [20],
-            weathercode: [0]
-          }
-        })
-      });
-  
-      const result = await getWeather('2025-03-01', { city: 'New York', state: 'NY' });
-      expect(result).toBe('Date not found in forecast');
+      const result = await getWeather('2025-03-02', { city: 'New York' });
+      expect(result).toBe('Sunny');
     });
   
+    test('handles API error', async () => {
+      global.fetch.mockRejectedValue(new Error('API Error'));
+  
+      const result = await getWeather('2025-03-02', { city: 'New York' });
+      expect(result).toBe('Failed to fetch weather data');
+    });
+  
+    test('handles non-OK response', async () => {
+      const mockResponse = {
+        ok: false
+      };
+      global.fetch.mockResolvedValue(mockResponse);
+  
+      const result = await getWeather('2025-03-02', { city: 'New York' });
+      expect(result).toBe('Failed to fetch weather data');
+    });
   });
-  
+   
 
 describe('processSalesData', () => {
   test('processes data correctly', () => {
@@ -144,19 +142,14 @@ describe('processSalesData', () => {
     expect(result).toEqual([]);
   });
 });
-
 describe('getWeatherDescription', () => {
-    test('returns correct description for known weather codes', () => {
-      expect(getWeatherDescription(0)).toBe('Clear sky');
-      expect(getWeatherDescription(61)).toBe('Rain');
-      expect(getWeatherDescription(95)).toBe('Thunderstorm');
-      expect(getWeatherDescription(71)).toBe('Snow');
-    });
-  
-    test('returns "Unknown" for unknown weather codes', () => {
-      expect(getWeatherDescription(100)).toBe('Unknown');
-      expect(getWeatherDescription(-1)).toBe('Unknown');
-      expect(getWeatherDescription(999)).toBe('Unknown');
-    });
+  test('returns correct description for known weather codes', () => {
+    expect(getWeatherDescription(1000)).toBe('Sunny');
+    expect(getWeatherDescription(1135)).toBe('Fog');
+    expect(getWeatherDescription(1282)).toBe('Moderate or heavy snow with thunder');
   });
-  
+
+  test('returns "Unknown" for unknown weather codes', () => {
+    expect(getWeatherDescription(9999)).toBe('Unknown');
+  });
+});
