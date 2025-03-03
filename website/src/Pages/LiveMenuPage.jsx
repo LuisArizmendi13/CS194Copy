@@ -19,6 +19,7 @@ const LiveMenuPage = () => {
     fetchDishes();
   }, []);
 
+  
   return (
     <div className="p-6 mx-auto" style={{ maxWidth: '1124px' }}>
       <h2 className="text-2xl font-bold mb-4">Live Menu</h2>

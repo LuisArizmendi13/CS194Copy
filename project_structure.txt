@@ -1,68 +1,123 @@
-README.md
-alanaespositofile
-package-lock.json
-package.json
-project_structure.txt
-website
+.
+├── README.md
+├── client-menu
+│   ├── README.md
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── public
+│   │   ├── favicon.ico
+│   │   ├── favicon1.ico
+│   │   ├── index.html
+│   │   ├── logo192.png
+│   │   ├── logo512.png
+│   │   ├── manifest.json
+│   │   └── robots.txt
+│   ├── src
+│   │   ├── App.css
+│   │   ├── App.js
+│   │   ├── Pages
+│   │   │   ├── LiveMenuPage.jsx
+│   │   │   └── OrderPage.jsx
+│   │   ├── aws-config.js
+│   │   ├── components
+│   │   │   └── Navbar.jsx
+│   │   ├── index.css
+│   │   ├── index.js
+│   │   ├── logo.svg
+│   │   ├── reportWebVitals.js
+│   │   └── setupTests.js
+│   └── tailwind.config.js
+├── package-lock.json
+├── package.json
+├── project_structure.txt
+└── website
+    ├── README.md
+    ├── build
+    │   ├── asset-manifest.json
+    │   ├── favicon.ico
+    │   ├── index.html
+    │   ├── logo192.png
+    │   ├── logo512.png
+    │   ├── manifest.json
+    │   ├── robots.txt
+    │   └── static
+    │       ├── css
+    │       │   ├── main.b39a4673.css
+    │       │   └── main.b39a4673.css.map
+    │       └── js
+    │           ├── 488.0870ce05.chunk.js
+    │           ├── 488.0870ce05.chunk.js.map
+    │           ├── main.632162a4.js
+    │           ├── main.632162a4.js.LICENSE.txt
+    │           └── main.632162a4.js.map
+    ├── package-lock.json
+    ├── package.json
+    ├── postcss.config.js
+    ├── public
+    │   ├── favicon.ico
+    │   ├── favicon1.ico
+    │   ├── index.html
+    │   ├── logo192.png
+    │   ├── logo512.png
+    │   ├── manifest.json
+    │   └── robots.txt
+    ├── src
+    │   ├── App.js
+    │   ├── CSS
+    │   │   ├── App.css
+    │   │   └── index.css
+    │   ├── Pages
+    │   │   ├── ArchivePage.jsx
+    │   │   ├── ConfirmSignUp.jsx
+    │   │   ├── DishesPage.jsx
+    │   │   ├── HomePage.jsx
+    │   │   ├── LiveMenuPage.jsx
+    │   │   ├── MenuCreationPage.jsx
+    │   │   ├── MenuPage.jsx
+    │   │   ├── MyMenusPage.jsx
+    │   │   ├── SignIn.jsx
+    │   │   └── SignUp.jsx
+    │   ├── aws-config.js
+    │   ├── classes
+    │   │   ├── dish.js
+    │   │   └── menu.js
+    │   ├── components
+    │   │   ├── AddDishPopup.jsx
+    │   │   ├── Analytics
+    │   │   │   ├── AnalyticsPage.jsx
+    │   │   │   ├── Charts
+    │   │   │   ├── processSalesData.js
+    │   │   │   └── sales_data.json
+    │   │   ├── Calendar
+    │   │   │   ├── calendardisplay.html
+    │   │   │   └── calendardisplay.jsx
+    │   │   ├── DishBox.jsx
+    │   │   ├── DishDetailsPage.jsx
+    │   │   ├── DishList.jsx
+    │   │   ├── DishesPage.jsx
+    │   │   ├── DishesPageold.jsx
+    │   │   ├── FormInput.jsx
+    │   │   ├── LiveDishBox.jsx
+    │   │   ├── LiveDishList.jsx
+    │   │   ├── Menus
+    │   │   │   ├── DishSelectionPopup.jsx
+    │   │   │   ├── MenuBox.jsx
+    │   │   │   ├── MenuList.jsx
+    │   │   │   └── NewMenuButton.jsx
+    │   │   ├── Navbar.jsx
+    │   │   └── NewDishButton.jsx
+    │   ├── constants
+    │   │   └── names.js
+    │   ├── context
+    │   │   └── AuthContext.js
+    │   ├── hooks
+    │   │   └── useFetchMenus.js
+    │   ├── index.js
+    │   ├── reportWebVitals.js
+    │   └── utils
+    │       └── auth.js
+    ├── src.zip
+    └── tailwind.config.js
 
-./website:
-README.md
-package-lock.json
-package.json
-postcss.config.js
-public
-src
-tailwind.config.js
-
-./website/public:
-favicon.ico
-index.html
-logo192.png
-logo512.png
-manifest.json
-robots.txt
-
-./website/src:
-App.js
-CSS
-Pages
-aws-config.js
-classes
-components
-constants
-index.js
-reportWebVitals.js
-
-./website/src/CSS:
-App.css
-index.css
-
-./website/src/Pages:
-DishesPage.jsx
-LiveMenuPage.jsx
-
-./website/src/classes:
-dish.js
-menu.js
-
-./website/src/components:
-AddDishPopup.jsx
-ArchivePage.jsx
-Calendar
-DishBox.jsx
-DishDetailsPage.jsx
-DishList.jsx
-DishesPage.jsx
-DishesPageold.jsx
-LiveDishBox.jsx
-LiveDishList.jsx
-MenuPage.jsx
-NewDishButton.jsx
-navbar.jsx
-
-./website/src/components/Calendar:
-calendardisplay.html
-calendardisplay.jsx
-
-./website/src/constants:
-names.js
+25 directories, 96 files

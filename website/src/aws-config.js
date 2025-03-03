@@ -13,16 +13,17 @@ const USER_POOL_ID = process.env.REACT_APP_COGNITO_USER_POOL_ID;
 const CLIENT_ID = process.env.REACT_APP_COGNITO_CLIENT_ID;
 
 AWS.config.update({
-  region: REGION,
-  accessKeyId: ACCESS_KEY,
-  secretAccessKey: SECRET_KEY,
+  region: 'us-east-2',
+  accessKeyId: 'AKIA2RP6IK7BO3IFVXUW',
+  secretAccessKey: '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',
 });
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const userPool = new CognitoUserPool({
-  UserPoolId: USER_POOL_ID,
-  ClientId: CLIENT_ID,
+  UserPoolId: 'us-east-2_oKZoSmHwr',
+  ClientId: '5njl5mqls9qkkgvrjjtbom381q'
 });
+
 
 const getUserRestaurantId = (session) => {
   if (!session) return null;
