@@ -93,14 +93,16 @@ export async function getLocation(location) {
   }
 }
 
+const WEATHER_KEY = 'd73de1b5e4944cd295933005250303';
 
 export async function getWeather(date, location) {
-  const coords = await getLocation(location);
+  const url = 'https://api.weatherapi.com/v1/current.json?key=d73de1b5e4944cd295933005250303&q=${location.city}&aqi=no'
+  // const coords = await getLocation(location);
   
-  if (!coords || !coords.latitude || !coords.longitude) {
-    return "Location not found";
-  }
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&start_date=${date}&end_date=${date}&hourly=temperature_2m,weathercode`;
+  //if (!coords || !coords.latitude || !coords.longitude) {
+  //  return "Location not found";
+  //}
+  //const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&start_date=${date}&end_date=${date}&hourly=temperature_2m,weathercode`;
   try {
     const response = await fetch(url);
     if (!response.ok) {

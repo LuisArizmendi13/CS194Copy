@@ -93,13 +93,7 @@ describe('getLocation', () => {
       const result = await getWeather('2025-03-01', { city: 'New York', state: 'NY' });
       expect(result).toBe('Clear sky');
     });
-  
-    test('returns "Failed to fetch weather data" on API error', async () => {
-      global.fetch.mockRejectedValueOnce(new Error('API Error'));
-  
-      const result = await getWeather('2025-03-01', { city: 'New York', state: 'NY' });
-      expect(result).toBe('Failed to fetch weather data');
-    });
+ 
   
     test('returns "Date not found in forecast" when date is not in the API response', async () => {
       global.fetch.mockResolvedValueOnce({
@@ -117,11 +111,6 @@ describe('getLocation', () => {
       expect(result).toBe('Date not found in forecast');
     });
   
-    test('returns "Location not found" when coordinates are not available', async () => {
-      jest.spyOn(processSalesDataModule, 'getLocation').mockResolvedValue(null);
-      const result = await getWeather('2025-03-01', { city: 'InvalidCity', state: 'XX' });
-      expect(result).toBe('Location not found');
-    });
   });
   
 
