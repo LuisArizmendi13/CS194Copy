@@ -3,7 +3,7 @@ class Dish {
   constructor(name, price, ingredients = []) {
     this.name = name;
     this.ingredients = ingredients; // List of ingredients for the dish
-    this.price = price;
+    this.price = price;SVGAnimatedLength
     this.sales = []; // List of sales made for this dish
     this.archive = false;
   }
