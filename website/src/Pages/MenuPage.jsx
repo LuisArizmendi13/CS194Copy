@@ -69,7 +69,7 @@ const MenuPage = () => {
         ← Back to Menus
       </button>
 
-      <h2 className="text-2xl font-bold mb-4">{menu.name}</h2>
+      <h2 className="text-2xl font-bo ld mb-4">{menu.name}</h2>
       <p className="text-gray-600">{menu.description || "No description available."}</p>
 
       {/* Display Selected Dishes */}

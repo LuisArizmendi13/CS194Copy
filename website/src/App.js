@@ -4,7 +4,7 @@ import { Navbar } from "./components/Navbar";
 import HomePage from "./Pages/HomePage"; // ✅ Import Home Page
 import MyMenusPage from "./Pages/MyMenusPage";
 import MenuPage from "./Pages/MenuPage";
-import MenuCreationPage from "./Pages/MenuCreationPage";
+import MenuCreationPage from "./Pages/MenuCreationPage.jsx";
 import DishesPage from "./Pages/DishesPage";
 import LiveMenuPage from "./Pages/LiveMenuPage";
 import ArchivePage from "./Pages/ArchivePage";
