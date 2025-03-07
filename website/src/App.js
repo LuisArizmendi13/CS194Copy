@@ -2,6 +2,9 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
 import HomePage from "./Pages/HomePage"; // ✅ Import Home Page
+import MyMenusPage from "./Pages/MyMenusPage";
+import MenuPage from "./Pages/MenuPage";
+import MenuCreationPage from "./Pages/MenuCreationPage.jsx";
 import DishesPage from "./Pages/DishesPage";
 import LiveMenuPage from "./Pages/LiveMenuPage";
 import ArchivePage from "./Pages/ArchivePage";
@@ -30,11 +33,14 @@ const AppContent = () => {
         <Route path="/" element={<ProtectedRoute element={<HomePage />} />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/mymenus" element={<MyMenusPage />} />
         <Route path="/confirm" element={<ConfirmSignUp />} />
         <Route path="/dishes" element={<ProtectedRoute element={<DishesPage />} />} />
         <Route path="/menu" element={<ProtectedRoute element={<LiveMenuPage />} />} />
         <Route path="/archive" element={<ProtectedRoute element={<ArchivePage />} />} /> 
         <Route path="/analytics" element={<ProtectedRoute element={<AnalyticsPage />} />} /> 
+        <Route path="/create-menu" element={<MenuCreationPage />} /> 
+        <Route path="/menus/:menuID" element={<MenuPage />} />
         <Route path="*" element={<Navigate to="/" />} /> {/* ✅ Catch-all for unknown routes */}
       </Routes>
     </Router>
@@ -57,6 +63,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Navbar } from "./components/navbar"; // Adjust path as needed
 import DishesPage from "./Pages/DishesPage"; // Import the DishesPage component
 import LiveMenuPage from "./Pages/LiveMenuPage";
+import myMenusPage from "./Pages/myMenus";
 import ArchivePage from "./components/ArchivePage";
 import AnalyticsPage from "./components/Analytics/AnalyticsPage";
 
@@ -68,7 +75,7 @@ const App = () => (
         path="/"
         element={<div className="p-4">Welcome to the Home Page</div>}
       />
-      <Route path="/menus" element={<div className="p-4"></div>} />
+      <Route path="/menus" element={<myMenusPage />} />
       <Route path="/menu" element={<LiveMenuPage />} />
       <Route path="/dishes" element={<DishesPage />} />
       <Route path="/analytics" element={<AnalyticsPage />} />{" "}
