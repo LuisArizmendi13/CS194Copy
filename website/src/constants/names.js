@@ -5,5 +5,6 @@ export const NAV_LINKS = [
   {name: "Live Menu", path:"menu"},
   { name: "Dishes", path: "/dishes" }, 
   {name: "Analytics", path:"/analytics"}, 
-  {name: 'Archive', path:"/archive"}
+  {name: 'Archive', path:"/archive"}, 
+  {name:'Orders', path:"/orders"}
 ];

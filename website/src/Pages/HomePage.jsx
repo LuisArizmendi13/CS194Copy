@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getUserRestaurantId } from "../aws-config"; // ✅ Fetch restaurant ID
+import { getUserRestaurantId } from "../aws-config";
+import QRCodeComponent from "../components/QRCodeComponent"; // ✅ Import the QR Code component
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -10,16 +11,10 @@ const HomePage = () => {
     if (user) {
       user.getSession((err, session) => {
         if (!err && session.isValid()) {
-          //console.log("✅ Session Found:", session);
           const restaurantId = getUserRestaurantId(session);
-          console.log("✅ Retrieved Restaurant ID:", restaurantId);
           setRestaurantID(restaurantId || "Unknown Restaurant");
-        } else {
-          console.log("❌ No valid session found.");
         }
       });
-    } else {
-      console.log("❌ User not found.");
     }
   }, [user]);
 
@@ -32,10 +27,13 @@ const HomePage = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-lg text-center">
         <h1 className="text-2xl font-bold text-gray-800">Welcome to:</h1>
         <p className="text-lg text-gray-600 mt-2">{restaurantID}</p>
+
+        {/* ✅ Use QR Code Component */}
+        <QRCodeComponent restaurantID={restaurantID} />
       </div>
     </div>
   );

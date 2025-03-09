@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { dynamoDb, TABLE_NAME } from '../aws-config';
+import { dynamoDb, TABLE_NAME } from '../../aws-config';
 
 // Add Dish Popup Component
 const AddDishPopup = ({ onClose, onSave }) => {

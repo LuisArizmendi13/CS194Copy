@@ -1,20 +1,22 @@
 // Dish.js
 class Dish {
-  constructor(name, price, ingredients = []) {
+  constructor(name, description, price, ingredients = []) {
     this.name = name;
-    this.ingredients = ingredients; // List of ingredients for the dish
-    this.price = price;SVGAnimatedLength
-    this.sales = []; // List of sales made for this dish
+    this.description = description; // ✅ New Description Field
+    this.ingredients = ingredients;
+    this.price = price;
+    this.sales = [];
     this.archive = false;
   }
 
   made_sale(sale) {
-    this.sales.push(sale); // Add a sale to the list
+    this.sales.push(sale);
   }
 
   sale_count() {
-    return this.sales.length; // Return the number of sales
+    return this.sales.length;
   }
+
   archive() {
     this.archive = true;
   }
@@ -22,11 +24,10 @@ class Dish {
 
 class Sale {
   constructor(dish, location, time = new Date()) {
-    this.time = time; // Time sale was made
-    this.price = dish.price; // Price of the dish sold
-    this.dish_name = dish.name; // Name of the dish sold
-
-    // Enforce structured location format
+    this.time = time;
+    this.price = dish.price;
+    this.dish_name = dish.name;
+    this.description = dish.description; // ✅ Ensure Description is Available
     this.location = {
       name: location.name || "Unknown Location",
       address: location.address || "No Address Provided",
@@ -37,5 +38,4 @@ class Sale {
   }
 }
 
-// Export the classes to be used in other files
 module.exports = { Dish, Sale };

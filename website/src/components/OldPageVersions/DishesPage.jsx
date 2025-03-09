@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dish } from '../classes/dish'; // Adjust import path if needed
+import { Dish } from '../../classes/dish'; // Adjust import path if needed
 import { Link } from 'react-router-dom';
 
 // Input Component
