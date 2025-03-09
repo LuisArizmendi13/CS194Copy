@@ -21,7 +21,7 @@ export function processSalesData(rawData) {
             time_of_day: getTimeOfDay(saleDate),
             day_of_week: getDayOfWeek(saleDate),
             month: getMonth(saleDate),
-            weather_condition: simulateWeather(saleDate),
+            weather_condition: getWeather(saleDate, sale.location),
           },
         };
       }),
