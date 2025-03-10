@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import {
   CognitoUser,
-  AuthenticationDetails,
+  AuthenticationDetails, 
+  CognitoUserPool,
 } from "amazon-cognito-identity-js";
 import { userPool } from "../aws-config";
 
@@ -9,7 +10,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [session, setSession] = useState(null); // ✅ Store session globally
+  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,11 +21,16 @@ export const AuthProvider = ({ children }) => {
           if (!err && session.isValid()) {
             console.log("✅ Restored session for:", currentUser.getUsername());
             setUser(currentUser);
-            setSession(session); // ✅ Store session globally
+            setSession(session);
+
+            // ✅ Store token in localStorage for API requests
+            const token = session.getIdToken().getJwtToken();
+            localStorage.setItem("cognitoToken", token);
           } else {
             console.log("⚠️ Session expired or invalid");
             setUser(null);
             setSession(null);
+            localStorage.removeItem("cognitoToken"); // ✅ Clear token on invalid session
           }
           setLoading(false);
         });
@@ -60,7 +66,12 @@ export const AuthProvider = ({ children }) => {
         onSuccess: (session) => {
           console.log("✅ Signed in:", cognitoUser.getUsername());
           setUser(cognitoUser);
-          setSession(session); // ✅ Store session globally
+          setSession(session);
+
+          // ✅ Store the token in localStorage for API requests
+          const token = session.getIdToken().getJwtToken();
+          localStorage.setItem("cognitoToken", token);
+
           resolve(session);
         },
         onFailure: (err) => reject(err),
@@ -75,6 +86,7 @@ export const AuthProvider = ({ children }) => {
     }
     setUser(null);
     setSession(null);
+    localStorage.removeItem("cognitoToken"); // ✅ Ensure token is removed on logout
   };
 
   if (loading) {
