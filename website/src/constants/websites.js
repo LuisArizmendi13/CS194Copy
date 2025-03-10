@@ -1,0 +1,1 @@
+export const CLIENT_APP_URL = 'http://localhost:4000/'; 

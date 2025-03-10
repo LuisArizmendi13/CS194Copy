@@ -3,6 +3,7 @@ import { dynamoDb, TABLE_NAME } from '../aws-config';
 
 const AddDishPopup = ({ onClose, onSave }) => {
   const [name, setName] = useState("");
+  const [description, setDescription] = useState(""); // ✅ New Description Field
   const [price, setPrice] = useState("");
   const [ingredient, setIngredient] = useState("");
   const [ingredients, setIngredients] = useState([]);
@@ -15,9 +16,10 @@ const AddDishPopup = ({ onClose, onSave }) => {
   };
 
   const saveDish = async () => {
-    if (name && price && ingredients.length > 0) {
+    if (name && description && price && ingredients.length > 0) {
       const dish = { 
         name, 
+        description, // ✅ Include description
         price: parseFloat(price), 
         ingredients, 
         archive: false, 
@@ -43,6 +45,7 @@ const AddDishPopup = ({ onClose, onSave }) => {
         <div className="bg-gray-800 text-white p-4 rounded-t-lg text-lg font-bold">Add New Dish</div>
         <div className="p-4">
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter dish name" className="w-full p-2 border rounded mb-2" />
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter dish description" className="w-full p-2 border rounded mb-2"></textarea> {/* ✅ New Textarea for Description */}
           <input type="text" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Enter price" className="w-full p-2 border rounded mb-2" />
           <input type="text" value={ingredient} onChange={(e) => setIngredient(e.target.value)} placeholder="Enter ingredient" className="w-full p-2 border rounded mb-2" />
           <button onClick={addIngredient} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Ingredient</button>
