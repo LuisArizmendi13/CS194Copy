@@ -5,22 +5,20 @@ import AddDishPopup from '../components/AddDishPopup';
 import DishList from '../components/DishList';
 
 const DishesPage = () => {
-  const { user, session } = useAuth(); // ✅ Get session from AuthContext
+  const { user, session } = useAuth();
   const [dishes, setDishes] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
-    if (!user || !session) return; // Ensure user is authenticated
+    if (!user || !session) return;
 
     const fetchDishes = async () => {
       try {
-        const restaurantId = getUserRestaurantId(session); // ✅ Use session now stored in AuthContext
+        const restaurantId = getUserRestaurantId(session);
         if (!restaurantId) {
           console.warn("❌ No restaurantId found in session!");
           return;
         }
-
-        //console.log(`✅ Fetching dishes for restaurant: ${restaurantId}`);
 
         const params = {
           TableName: TABLE_NAME,
@@ -30,7 +28,6 @@ const DishesPage = () => {
 
         const data = await dynamoDb.scan(params).promise();
         if (data.Items) {
-          //console.log("✅ Fetched Dishes:", data.Items);
           setDishes(data.Items);
         } else {
           console.log("⚠️ No dishes found for this restaurant.");
@@ -50,7 +47,6 @@ const DishesPage = () => {
         console.error("❌ Cannot save dish: No restaurantId found!");
         return;
       }
-
       const dishWithRestaurant = { ...dish, restaurantId };
       await dynamoDb.put({ TableName: TABLE_NAME, Item: dishWithRestaurant }).promise();
       setDishes([...dishes, dishWithRestaurant]);
@@ -65,10 +61,18 @@ const DishesPage = () => {
     );
   };
 
+  // Deletion handler updates state to remove the dish
+  const handleDeleteDish = (deletedDishId) => {
+    setDishes(prevDishes => prevDishes.filter(dish => dish.dishId !== deletedDishId));
+  };
+
   return (
     <div className="p-6 mx-auto" style={{ maxWidth: '1124px' }}>
       <div className="flex justify-end mb-4">
-        <button onClick={() => setShowPopup(true)} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        <button 
+          onClick={() => setShowPopup(true)} 
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
           + New Dish
         </button>
       </div>
@@ -81,6 +85,7 @@ const DishesPage = () => {
           )
         }
         onSaleRecorded={updateSaleCount}
+        onDelete={handleDeleteDish}  // Ensure this prop is passed!
       />
 
       {showPopup && <AddDishPopup onClose={() => setShowPopup(false)} onSave={addDish} />}
