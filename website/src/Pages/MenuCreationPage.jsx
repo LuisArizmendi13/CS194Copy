@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { dynamoDb, MENUS_TABLE_NAME, getUserRestaurantId } from "../aws-config";
+import { getUserRestaurantId } from "../aws-config";
 import { useAuth } from "../context/AuthContext";
 import FormInput from "../components/FormInput";
 import DishSelectionPopup from "../components/Menus/DishSelectionPopup";
+import { createMenu } from "../services/menuService";
 
 const MenuCreationPage = () => {
   const navigate = useNavigate();
@@ -35,18 +36,16 @@ const MenuCreationPage = () => {
       name: menuName.trim(),
       description: menuDescription.trim(),
       restaurantId,
-      dishes: selectedDishes, // Include selected dishes
+      dishes: selectedDishes,
     };
+    
 
     try {
       setIsSaving(true);
-      await dynamoDb.put({
-        TableName: MENUS_TABLE_NAME,
-        Item: newMenu,
-      }).promise();
-
-      console.log("✅ Menu successfully saved:", newMenu);
-      navigate("/menus");
+      await createMenu(newMenu);
+      console.log("✅ Menu successfully saved: ", newMenu);
+      console.log("Navigating to /mymenus");
+      navigate("/mymenus");
     } catch (error) {
       console.error("❌ Error saving menu:", error);
       setErrorMessage("An error occurred while saving the menu. Please try again.");
@@ -83,8 +82,10 @@ const MenuCreationPage = () => {
         <div className="mt-4">
           <h3 className="text-lg font-semibold">Selected Dishes:</h3>
           {selectedDishes.length > 0 ? (
-            selectedDishes.map(dish => (
-              <p key={dish.dishId} className="text-gray-700">{dish.name}</p>
+            selectedDishes.map((dish) => (
+              <p key={dish.dishId} className="text-gray-700">
+                {dish.name}
+              </p>
             ))
           ) : (
             <p className="text-gray-500">No dishes selected.</p>
@@ -102,15 +103,18 @@ const MenuCreationPage = () => {
 
         {/* Buttons Section */}
         <div className="flex justify-between items-center mt-6">
-          <button type="button" onClick={() => navigate("/menus")} className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+          <button
+            type="button"
+            onClick={() => navigate("/mymenus")}
+            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+          >
             ← Cancel
           </button>
           <div className="flex gap-4">
-            {/* Select Dishes Button (Now Prevents Form Submission) */}
             <button
               type="button"
               onClick={(e) => {
-                e.preventDefault(); // ✅ Prevents form submission bug
+                e.preventDefault();
                 console.log("Opening Dish Selection Popup");
                 setShowPopup(true);
               }}
@@ -118,9 +122,11 @@ const MenuCreationPage = () => {
             >
               Select Dishes
             </button>
-
-            {/* Save Menu Button */}
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" disabled={isSaving}>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              disabled={isSaving}
+            >
               {isSaving ? "Saving..." : "Save Menu"}
             </button>
           </div>

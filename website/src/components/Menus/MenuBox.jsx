@@ -5,6 +5,7 @@ import DeleteButtonWithConfirmation from "../DeleteButtonWithConfirmation";
 
 const MenuBox = ({ menu, onDelete, setLiveMenu }) => {
   const [showLiveMenuConfirmation, setShowLiveMenuConfirmation] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   // Unset any other live menus for this restaurant
   const unsetOtherLiveMenus = async (restaurantId, newLiveMenuId) => {
@@ -53,9 +54,12 @@ const MenuBox = ({ menu, onDelete, setLiveMenu }) => {
       // Unset any other live menus for the same restaurant
       await unsetOtherLiveMenus(menu.restaurantId, menu.menuID);
 
-      // Optionally update sessionStorage and dispatch an event to notify LiveMenuPage
+      // Update sessionStorage and dispatch an event to notify LiveMenuPage.
       sessionStorage.setItem("liveMenuID", menu.menuID);
       window.dispatchEvent(new Event("liveMenuUpdated"));
+
+      // Show success popup
+      setShowSuccessPopup(true);
     } catch (error) {
       console.error("Error setting live menu:", error);
     }
@@ -91,7 +95,6 @@ const MenuBox = ({ menu, onDelete, setLiveMenu }) => {
               Set to Live Menu
             </button>
           )}
-
           {onDelete && (
             <DeleteButtonWithConfirmation
               onConfirm={async () => {
@@ -136,6 +139,24 @@ const MenuBox = ({ menu, onDelete, setLiveMenu }) => {
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Popup Modal */}
+      {showSuccessPopup && (
+        <div
+          className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center z-50"
+          onClick={() => setShowSuccessPopup(false)}
+        >
+          <div className="bg-white p-4 rounded shadow-md text-center">
+            <p className="mb-4">Live menu updated successfully!</p>
+            <button
+              onClick={() => setShowSuccessPopup(false)}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}

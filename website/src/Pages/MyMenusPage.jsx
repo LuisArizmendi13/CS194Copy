@@ -1,59 +1,28 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { dynamoDb, MENUS_TABLE_NAME, getUserRestaurantId } from "../aws-config";
+import useMenus from "../hooks/useMenus";
+import MenuList from "../components/Menus/MenuList";
 import NewMenuButton from "../components/Menus/NewMenuButton";
 import UploadMenuPopup from "../components/UploadMenuPopup";
-import MenuList from "../components/Menus/MenuList";
 
 const MyMenusPage = () => {
   const { session } = useAuth();
-  const [menus, setMenus] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { menus, loading, error, reload } = useMenus(session);
   const [showUploadPopup, setShowUploadPopup] = useState(false);
 
-  // Define the function to fetch menus
-  const fetchMenus = useCallback(async () => {
-    if (!session) return;
-    try {
-      const restaurantId = getUserRestaurantId(session);
-      if (!restaurantId) {
-        console.warn("❌ No restaurantId found!");
-        setLoading(false);
-        return;
-      }
-      const params = {
-        TableName: MENUS_TABLE_NAME,
-        FilterExpression: "restaurantId = :rId",
-        ExpressionAttributeValues: { ":rId": restaurantId },
-      };
-      const data = await dynamoDb.scan(params).promise();
-      if (data.Items) {
-        console.log("✅ Fetched Menus:", data.Items);
-        setMenus(data.Items);
-      }
-    } catch (error) {
-      console.error("❌ Error fetching menus:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [session]);
+  // Deletion handler: you can either reload or update state locally.
+  const handleDeleteMenu = (deletedMenuID) => {
+    reload();
+  };
 
+  // Listen for live menu updates and refresh menus immediately.
   useEffect(() => {
-    fetchMenus();
-
-    // Listen for live menu updates and refresh menus when event fires.
     const handleLiveMenuUpdated = () => {
-      fetchMenus();
+      reload();
     };
     window.addEventListener("liveMenuUpdated", handleLiveMenuUpdated);
-
     return () => window.removeEventListener("liveMenuUpdated", handleLiveMenuUpdated);
-  }, [fetchMenus]);
-
-  // Deletion handler: update state to remove the deleted menu.
-  const handleDeleteMenu = (deletedMenuID) => {
-    setMenus((prevMenus) => prevMenus.filter((menu) => menu.menuID !== deletedMenuID));
-  };
+  }, [reload]);
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -70,11 +39,15 @@ const MyMenusPage = () => {
 
       {loading ? (
         <p className="text-gray-500 text-center">Loading menus...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
       ) : (
         <MenuList menus={menus} onDelete={handleDeleteMenu} />
       )}
 
-      {showUploadPopup && <UploadMenuPopup onClose={() => setShowUploadPopup(false)} />}
+      {showUploadPopup && (
+        <UploadMenuPopup onClose={() => setShowUploadPopup(false)} />
+      )}
     </div>
   );
 };
