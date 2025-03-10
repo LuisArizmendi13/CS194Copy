@@ -97,7 +97,7 @@ app.post("/api/upload-menu", upload.single("file"), async (req, res) => {
         parsedDishes = parsedDishes.map(dish => ({
             name: dish.name,
             description: dish.description,
-            price: parseFloat(dish.price.replace(/[^0-9.]/g, "")), // ✅ Remove "$" and parse to float
+            price: parseFloat(dish.price.toString().replace(/[^0-9.]/g, "")), // ✅ Remove "$" and parse to float
             ingredients: []
         }));
 
