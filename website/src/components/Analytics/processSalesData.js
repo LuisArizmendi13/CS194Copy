@@ -107,7 +107,6 @@ export async function getWeather(date, location) {
     return "Failed to fetch weather data";
   }
 }
-
 export function getWeatherDescription(condition) {
   const weatherCodes = {
     1000: "Sunny",
@@ -159,8 +158,29 @@ export function getWeatherDescription(condition) {
     1279: "Patchy light snow with thunder",
     1282: "Moderate or heavy snow with thunder"
   };
-  return weatherCodes[condition] || "Unknown";
+
+  // Categorize weather conditions
+  const weatherCategories = {
+    "Sunny": ["Sunny"],
+    "Cloudy": ["Partly cloudy", "Cloudy", "Overcast"],
+    "Rain": ["Patchy light drizzle", "Light drizzle", "Patchy light rain", "Light rain", "Moderate rain at times", "Moderate rain", "Heavy rain at times", "Heavy rain", "Light rain shower", "Moderate or heavy rain shower", "Torrential rain shower", "Patchy light rain with thunder", "Moderate or heavy rain with thunder"],
+    "Snow": ["Patchy snow possible", "Blowing snow", "Blizzard", "Patchy light snow", "Light snow", "Patchy moderate snow", "Moderate snow", "Patchy heavy snow", "Heavy snow", "Light snow showers", "Moderate or heavy snow showers", "Patchy light snow with thunder", "Moderate or heavy snow with thunder"],
+    "Freezing": ["Patchy freezing drizzle possible", "Freezing drizzle", "Heavy freezing drizzle", "Light freezing rain", "Moderate or heavy freezing rain"],
+    "Sleet": ["Patchy sleet possible", "Light sleet", "Moderate or heavy sleet", "Light sleet showers", "Moderate or heavy sleet showers"],
+    "Mist/Fog": ["Mist", "Fog", "Freezing fog"],
+    "Thunder": ["Thundery outbreaks possible"],
+    "Ice Pellets": ["Ice pellets", "Light showers of ice pellets", "Moderate or heavy showers of ice pellets"]
+  };
+
+  const description = weatherCodes[condition] || "Unknown";
+  for (const category in weatherCategories) {
+    if (weatherCategories[category].includes(description)) {
+      return category;
+    }
+  }
+  return "Unknown";
 }
+
 
 // Simulated weather based on date (can be replaced with real API)
 function simulateWeather(date) {

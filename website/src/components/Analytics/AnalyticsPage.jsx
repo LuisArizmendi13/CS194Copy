@@ -8,11 +8,14 @@ import SalesTrendChart from "./Charts/SalesTrendChart";
 import SalesByTimeOfDayChart from "./Charts/SalesByTimeOfDayChart";
 import SalesByDayChart from "./Charts/SalesByDayChart";
 import SeasonalPerformanceChart from "./Charts/SeasonalPerformanceChart";
+import WeatherPerformanceChart from "./Charts/WeatherPerformanceChart";
 
 const AnalyticsPage = () => {
   const [processedData, setProcessedData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [seasonalData, setSeasonalData] = useState([]);
+  const [weatherData, setWeatherData] = useState([]); // Add state for weather data
+  const [chartData, setChartData] = useState([]); // Define chartData as a state
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -66,22 +69,50 @@ const AnalyticsPage = () => {
         return acc;
       }, {});
 
-      const monthlyTrends = Object.values(salesByMonth).sort((a, b) =>
-        a.month.localeCompare(b.month)
-      );
-      setMonthlyData(monthlyTrends);
+      // Assuming enrichedData is the result of processSalesData(rawData)
+      const weatherSales = enrichedData.reduce((acc, dish) => {
+        dish.sales.forEach((sale) => {
+          const weatherCategory = sale.derived.weather_condition;
 
-      const seasonalTrends = Object.values(seasonalSales).sort((a, b) =>
-        a.month.localeCompare(b.month)
-      );
-      setSeasonalData(seasonalTrends);
-    } catch (err) {
-      console.error("Error processing data:", err);
-      setError(
-        "There was an error loading your analytics. Please try refreshing the page."
-      );
+          if (!acc[weatherCategory]) {
+            acc[weatherCategory] = {
+              weather: weatherCategory,
+              dishes: {},
+            };
+          }
+
+          if (!acc[weatherCategory].dishes[dish.name]) {
+            acc[weatherCategory].dishes[dish.name] = {
+              totalSales: 0,
+              totalRevenue: 0,
+              count: 0,
+            };
+          }
+
+          acc[weatherCategory].dishes[dish.name].totalSales += 1;
+          acc[weatherCategory].dishes[dish.name].totalRevenue += dish.price;
+          acc[weatherCategory].dishes[dish.name].count += 1;
+        });
+
+        return acc;
+      }, {});
+
+      // Extract data for charting
+      const chartDataToSet = Object.keys(weatherSales).map((weather) => {
+        return {
+          weather: weatherSales[weather].weather,
+          totalSales: Object.values(weatherSales[weather].dishes).reduce((acc, dish) => acc + dish.totalSales, 0),
+        };
+      });
+
+      setMonthlyData(Object.values(salesByMonth));
+      setSeasonalData(Object.values(seasonalSales));
+      setWeatherData(Object.values(weatherSales));
+      setChartData(chartDataToSet); // Update chartData state
+    } catch (error) {
+      setError(error.message); // Handle the error by setting the error state
     }
-  }, []);
+  }, [salesData]);
 
   if (error) {
     return (
@@ -188,12 +219,23 @@ const AnalyticsPage = () => {
               </div>
             </div>
           </section>
-        </div>
 
-        <footer className="mt-8 text-center text-gray-500 text-sm">
-          <p>Last updated: {new Date().toLocaleDateString()}</p>
-        </footer>
+          {/* Weather Analysis section */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">
+              Weather Analysis
+            </h2>
+            <div className="bg-white rounded-lg shadow">
+              <div className="p-6">
+                <WeatherPerformanceChart data={chartData} />
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
+      <footer className="mt-8 text-center text-gray-500 text-sm">
+        <p>Last updated: {new Date().toLocaleDateString()}</p>
+      </footer>
     </div>
   );
 };
