@@ -1,7 +1,8 @@
+// WeatherPerformanceChart.jsx
 import React from "react";
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -10,9 +11,11 @@ import {
 } from "recharts";
 
 const WeatherPerformanceChart = ({ data }) => {
+  const dishes = Object.keys(data[0]).filter((key) => key !== "weather_condition");
+
   return (
     <div className="h-64">
-      <BarChart
+      <LineChart
         width={500}
         height={300}
         data={data}
@@ -28,8 +31,15 @@ const WeatherPerformanceChart = ({ data }) => {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="dishes_sold" fill="#8884d8" />
-      </BarChart>
+        {dishes.map((dish) => (
+          <Line
+            key={dish}
+            type="monotone"
+            dataKey={dish}
+            stroke={`#${Math.floor(Math.random() * 16777215).toString(16)}`}
+          />
+        ))}
+      </LineChart>
     </div>
   );
 };

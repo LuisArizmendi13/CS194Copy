@@ -1,4 +1,3 @@
-// utils/processSalesData.js
 // Use this function to get weather condition for each sale
 export async function processSalesData(rawData, location) {
   const promises = rawData.map(async (dish) => {
@@ -17,6 +16,7 @@ export async function processSalesData(rawData, location) {
       if (saleDate.toDateString() === today.toDateString()) {
         weatherCondition = await getWeather(today, location);
       } else {
+        // For past sales, mark as "Historical data not available"
         weatherCondition = await getWeather(today, location);
       }
 

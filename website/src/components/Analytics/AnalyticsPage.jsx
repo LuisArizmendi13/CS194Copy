@@ -10,43 +10,32 @@ import SalesByTimeOfDayChart from "./Charts/SalesByTimeOfDayChart";
 import SalesByDayChart from "./Charts/SalesByDayChart";
 import SeasonalPerformanceChart from "./Charts/SeasonalPerformanceChart";
 import WeatherPerformanceChart from "./WeatherPerformanceChart";
-
-// Function to prepare data for weather chart (defined locally for demonstration)
-function prepareWeatherSalesData(processedData) {
+// Function to prepare data for weather chart
+export function prepareWeatherSalesData(processedData) {
   if (!processedData || !Array.isArray(processedData)) {
     console.error("processedData is not defined or not an array.");
     return [];
   }
 
-  const weatherSalesData = {};
-  processedData.forEach((dish) => {
-    if (!dish.sales || !Array.isArray(dish.sales)) {
-      console.error("dish.sales is not defined or not an array.");
-      return; // Skip this dish if sales data is invalid
-    }
+  const weatherConditions = Array.from(
+    new Set(processedData.flatMap((dish) => Object.keys(dish.dishesByWeather)))
+  );
 
-    dish.sales.forEach((sale) => {
-      if (!sale.derived || !sale.derived.weather_condition) {
-        console.error("Missing derived or weather_condition property.");
-        return; // Skip this sale if necessary properties are missing
+  const chartData = weatherConditions.map((condition) => {
+    const dataPoint = { weather_condition: condition };
+    processedData.forEach((dish) => {
+      if (dish.dishesByWeather[condition]) {
+        dataPoint[dish.name] = dish.dishesByWeather[condition][dish.name] || 0;
+      } else {
+        dataPoint[dish.name] = 0;
       }
-
-      const weatherCondition = sale.derived.weather_condition;
-      if (!weatherSalesData[weatherCondition]) {
-        weatherSalesData[weatherCondition] = 0;
-      }
-      weatherSalesData[weatherCondition]++;
     });
+    return dataPoint;
   });
-
-  // Convert object to chart data format
-  const chartData = Object.keys(weatherSalesData).map((condition) => ({
-    weather_condition: condition,
-    dishes_sold: weatherSalesData[condition],
-  }));
 
   return chartData;
 }
+
 
 const AnalyticsPage = () => {
   const [processedData, setProcessedData] = useState([]);
