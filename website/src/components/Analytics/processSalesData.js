@@ -1,6 +1,7 @@
 // utils/processSalesData.js
-export function processSalesData(rawData) {
-  return rawData.map((dish) => {
+// Use this function to get weather condition for each sale
+export async function processSalesData(rawData, location) {
+  const promises = rawData.map(async (dish) => {
     const totalSales = dish.sales.length;
     const totalRevenue = totalSales * dish.price;
 
@@ -8,26 +9,54 @@ export function processSalesData(rawData) {
     const estimatedCost = dish.price * 0.6; // Assume cost is ~60% of price
     const totalProfit = totalSales * (dish.price - estimatedCost);
 
+    const salesWithWeather = await Promise.all(dish.sales.map(async (sale) => {
+      const saleDate = new Date(sale.time);
+      const today = new Date();
+      
+      let weatherCondition;
+      if (saleDate.toDateString() === today.toDateString()) {
+        weatherCondition = await getWeather(today, location);
+      } else {
+        weatherCondition = await getWeather(today, location);
+      }
+
+      return {
+        ...sale,
+        derived: {
+          time_of_day: getTimeOfDay(saleDate),
+          day_of_week: getDayOfWeek(saleDate),
+          month: getMonth(saleDate),
+          weather_condition: weatherCondition,
+        },
+      };
+    }));
+
+    // Track dishes sold per weather condition
+    const dishesByWeather = {};
+    salesWithWeather.forEach((sale) => {
+      const weatherCondition = sale.derived.weather_condition;
+      if (!dishesByWeather[weatherCondition]) {
+        dishesByWeather[weatherCondition] = {};
+      }
+      if (!dishesByWeather[weatherCondition][dish.name]) {
+        dishesByWeather[weatherCondition][dish.name] = 0;
+      }
+      dishesByWeather[weatherCondition][dish.name]++;
+    });
+
     return {
       ...dish,
       totalSales,
       totalRevenue,
       totalProfit,
-      sales: dish.sales.map((sale) => {
-        const saleDate = new Date(sale.time);
-        return {
-          ...sale,
-          derived: {
-            time_of_day: getTimeOfDay(saleDate),
-            day_of_week: getDayOfWeek(saleDate),
-            month: getMonth(saleDate),
-            weather_condition: simulateWeather(saleDate),
-          },
-        };
-      }),
+      sales: salesWithWeather,
+      dishesByWeather,
     };
   });
+
+  return Promise.all(promises);
 }
+
 
 // Function to categorize time of day
 function getTimeOfDay(date) {
@@ -94,7 +123,7 @@ export async function getLocation(location) {
 const WEATHER_KEY = 'd73de1b5e4944cd295933005250303';
 
 export async function getWeather(date, location) {
-  const url = 'https://api.weatherapi.com/v1/current.json?key=d73de1b5e4944cd295933005250303&q=${location.city}&aqi=no'
+  const url = `https://api.weatherapi.com/v1/current.json?key=${WEATHER_KEY}&q=${location.city}&aqi=no`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
