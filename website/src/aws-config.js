@@ -7,6 +7,7 @@ const ACCESS_KEY = process.env.REACT_APP_AWS_ACCESS_KEY_ID;
 const SECRET_KEY = process.env.REACT_APP_AWS_SECRET_ACCESS_KEY;
 const TABLE_NAME = process.env.REACT_APP_DYNAMODB_TABLE || "Dishes";
 const MENUS_TABLE_NAME = process.env.REACT_APP_DYNAMODB_MENUS_TABLE || "Menus";
+const INGREDIENT_TABLE_NAME = process.env.REACT_APP_DYNAMODB_INGREDIENTS_TABLE || "Ingredients:";
 
 // Cognito Configuration
 const USER_POOL_ID = process.env.REACT_APP_COGNITO_USER_POOL_ID;
@@ -37,6 +38,6 @@ const getUserRestaurantId = (session) => {
 };
 
 
-export { dynamoDb, TABLE_NAME, MENUS_TABLE_NAME, userPool, getUserRestaurantId };
+export { dynamoDb, TABLE_NAME, MENUS_TABLE_NAME, INGREDIENT_TABLE_NAME, userPool, getUserRestaurantId };
 
 
