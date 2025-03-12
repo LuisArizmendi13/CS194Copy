@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { dynamoDb, TABLE_NAME } from '../aws-config';
+import { CognitoUserPool, CognitoUser } from "amazon-cognito-identity-js";
+import { dynamoDb, TABLE_NAME } from "../aws-config";
+import { userPool } from "../aws-config";
 
 const AddDishPopup = ({ onClose, onSave }) => {
   const [name, setName] = useState("");
@@ -9,12 +11,34 @@ const AddDishPopup = ({ onClose, onSave }) => {
   const [newIngredient, setNewIngredient] = useState("");
   const [ingredients, setIngredients] = useState([]);
   const [ingredientsList, setIngredientsList] = useState([]);
+  const [userId, setUserId] = useState(null);
 
+  // Fetch the userId for the authenticated user
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const cognitoUser = userPool.getCurrentUser();
+        if (cognitoUser) {
+          setUserId(cognitoUser.getUsername()); // Set the user ID
+        }
+      } catch (error) {
+        console.error("Error fetching user ID:", error);
+      }
+    };
+    fetchUserId();
+  }, []);
+
+  // Fetch ingredients for the current user
   useEffect(() => {
     const fetchIngredients = async () => {
+      if (!userId) return; // Wait until userId is available
       try {
         const params = {
           TableName: TABLE_NAME,
+          FilterExpression: "userId = :userId",
+          ExpressionAttributeValues: {
+            ":userId": userId,
+          },
         };
         const data = await dynamoDb.scan(params).promise();
         const ingredients = data.Items.reduce((acc, item) => {
@@ -29,7 +53,7 @@ const AddDishPopup = ({ onClose, onSave }) => {
       }
     };
     fetchIngredients();
-  }, []);
+  }, [userId]);
 
   const handleAddIngredient = () => {
     if (newIngredient.trim()) {
@@ -49,26 +73,34 @@ const AddDishPopup = ({ onClose, onSave }) => {
   };
 
   const saveDish = async () => {
-    if (name && description && price && ingredients.length > 0) {
-      const dish = { 
-        name, 
-        description, 
-        price: parseFloat(price), 
-        ingredients: Array.isArray(ingredients) ? ingredients : [ingredients], // Ensure ingredients is an array
-        archive: false, 
-        sales: [], 
-        dishId: `${Date.now()}` 
-      };
-      
-      try {
-        await dynamoDb.put({ TableName: TABLE_NAME, Item: dish }).promise();
-        onSave(dish);
-        onClose();
-      } catch (error) {
-        console.error("Error saving dish to DynamoDB:", error);
-      }
-    } else {
+    // Validate that all required fields are filled and userId exists
+    if (!userId) {
+      alert("User ID is missing. Please log in again.");
+      return;
+    }
+
+    if (!name || !description || !price || ingredients.length === 0) {
       alert("Please fill in all fields and add at least one ingredient.");
+      return;
+    }
+
+    const dish = { 
+      name,
+      description,
+      price: parseFloat(price),
+      ingredients: Array.isArray(ingredients) ? ingredients : [ingredients], // Ensure ingredients is an array
+      userId, // Include user ID
+      archive: false,
+      sales: [],
+      dishId: `${Date.now()}`,
+    };
+
+    try {
+      await dynamoDb.put({ TableName: TABLE_NAME, Item: dish }).promise();
+      onSave(dish);
+      onClose();
+    } catch (error) {
+      console.error("Error saving dish to DynamoDB:", error);
     }
   };
 
