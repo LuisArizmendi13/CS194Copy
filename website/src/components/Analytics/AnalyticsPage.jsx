@@ -11,6 +11,32 @@ import SalesByDayChart from "./Charts/SalesByDayChart";
 import SeasonalPerformanceChart from "./Charts/SeasonalPerformanceChart";
 import AiAssistantBox from "../AiAssistantBox"; // Adjust path as needed based on your file structure
 
+// Function to prepare data for weather chart
+export function prepareWeatherSalesData(processedData) {
+  if (!processedData || !Array.isArray(processedData)) {
+    console.error("processedData is not defined or not an array.");
+    return [];
+  }
+
+  const weatherConditions = Array.from(
+    new Set(processedData.flatMap((dish) => Object.keys(dish.dishesByWeather)))
+  );
+
+  const chartData = weatherConditions.map((condition) => {
+    const dataPoint = { weather_condition: condition };
+    processedData.forEach((dish) => {
+      if (dish.dishesByWeather[condition]) {
+        dataPoint[dish.name] = dish.dishesByWeather[condition][dish.name] || 0;
+      } else {
+        dataPoint[dish.name] = 0;
+      }
+    });
+    return dataPoint;
+  });
+
+  return chartData;
+}
+
 const AnalyticsPage = () => {
   const [processedData, setProcessedData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
