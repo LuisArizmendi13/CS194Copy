@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import jstat from 'jstat';
+import jstat from "jstat";
 
 import {
   LineChart,
@@ -23,14 +23,13 @@ const COLORS = [
   "#06B6D4", // Cyan
 ];
 
-// Function to calculate statistical significance
 function calculateStatisticalSignificance(data) {
   const dishes = Object.keys(data[0]?.dishes || {});
-  const months = data.map(d => d.month);
+  const months = data.map((d) => d.month);
 
   // Filter out NaN values before calculations
-  const filteredData = data.filter(item => {
-    return !Object.values(item.dishes).some(value => isNaN(value));
+  const filteredData = data.filter((item) => {
+    return !Object.values(item.dishes).some((value) => isNaN(value));
   });
 
   function oneWayANOVA(groups) {
@@ -52,16 +51,18 @@ function calculateStatisticalSignificance(data) {
   }
 
   const results = {};
-  dishes.forEach(dish => {
-    const groups = months.map(month => {
-      const monthData = filteredData.find(d => d.month === month);
-      return monthData ? [monthData.dishes[dish]] : [];
+  dishes.forEach((dish) => {
+    const groups = months.map((month) => {
+      const monthData = data.find((d) => d.month === month);
+      return [monthData.dishes[dish]];
     });
-    const { fStat, pValue } = oneWayANOVA(groups.filter(group => group.length > 0));
+    const { fStat, pValue } = oneWayANOVA(
+      groups.filter((group) => group.length > 0)
+    );
     results[dish] = {
       fStatistic: fStat,
       pValue: pValue,
-      significant: pValue < 0.05
+      significant: pValue < 0.05,
     };
   });
   return results;
@@ -69,61 +70,87 @@ function calculateStatisticalSignificance(data) {
 
 const SeasonalPerformanceChart = ({ data }) => {
   const dishes = Object.keys(data[0]?.dishes || {});
-  const significanceResults = useMemo(() => calculateStatisticalSignificance(data), [data]);
+  const significanceResults = useMemo(
+    () => calculateStatisticalSignificance(data),
+    [data]
+  );
+
+  // Format month labels to be more readable
+  const formatMonth = (monthStr) => {
+    const date = new Date(monthStr);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  // Get top 3 dishes with significant seasonality
+  const topSeasonalDishes = Object.entries(significanceResults)
+    .filter(([, result]) => result.significant)
+    .sort(([, a], [, b]) => a.pValue - b.pValue)
+    .slice(0, 3)
+    .map(([dish]) => dish);
+
+  // Status badge component
+  const SignificanceBadge = ({ isSignificant }) => (
+    <span
+      className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+        isSignificant
+          ? "bg-blue-100 text-blue-800"
+          : "bg-gray-100 text-gray-800"
+      }`}
+    >
+      {isSignificant ? "Significant" : "Not significant"}
+    </span>
+  );
 
   // Filter out data points with NaN values
-  const filteredData = data.filter(item => {
-    return !Object.values(item.dishes).some(value => isNaN(value));
+  const filteredData = data.filter((item) => {
+    return !Object.values(item.dishes).some((value) => isNaN(value));
   });
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-2">Seasonal Performance</h3>
-      <p className="text-gray-600 text-sm mb-4">
-        This chart tracks how each dish performs throughout the year. Each line
-        represents a different dish, showing how its sales change across months.
-        This helps identify seasonal patterns in dish popularity.
-      </p>
-      <div className="h-[400px]">
+      <div className="h-[350px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={filteredData}
             margin={{
-              top: 20,
-              right: 30,
-              left: 60,
-              bottom: 60,
+              top: 10,
+              right: 10,
+              left: 20,
+              bottom: 20,
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
             <XAxis
               dataKey="month"
-              tick={{ fill: "#4B5563", fontSize: 12 }}
+              tickFormatter={formatMonth}
+              tick={{ fill: "#6B7280", fontSize: 11 }}
               height={50}
             />
-            <YAxis tick={{ fill: "#4B5563", fontSize: 12 }}>
+            <YAxis tick={{ fill: "#6B7280", fontSize: 11 }}>
               <Label
                 value="Number of Orders"
                 angle={-90}
                 position="insideLeft"
-                offset={-50}
-                style={{ textAnchor: "middle", fill: "#4B5563", fontSize: 12 }}
+                offset={-10}
+                style={{ textAnchor: "middle", fill: "#6B7280", fontSize: 11 }}
               />
             </YAxis>
             <Tooltip
               contentStyle={{
                 backgroundColor: "#ffffff",
-                border: "1px solid #e5e7eb",
+                border: "1px solid #E5E7EB",
                 borderRadius: "6px",
-                fontSize: 12,
+                fontSize: 11,
+                boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
               }}
-              formatter={(value) => {
-                if (isNaN(value)) return ["", "Orders"];
-                return [`${value} orders`, "Orders"];
-              }}
+              labelFormatter={formatMonth}
+              formatter={(value) => [`${value} orders`, "Orders"]}
             />
             <Legend
-              wrapperStyle={{ fontSize: 12, paddingTop: "20px" }}
+              wrapperStyle={{ fontSize: 11, paddingTop: "10px" }}
               verticalAlign="bottom"
               height={36}
             />
@@ -142,25 +169,41 @@ const SeasonalPerformanceChart = ({ data }) => {
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-        <h4 className="text-sm font-medium mb-2">What This Means For You:</h4>
-        <ul className="text-sm text-gray-600 space-y-2">
-          <li>- Identify which dishes show strong seasonal patterns</li>
-          <li>- Plan menu changes around seasonal peaks and troughs</li>
-          <li>- Optimize inventory based on expected seasonal demand</li>
-          <li>- Consider seasonal pricing strategies</li>
-          <li>- Plan promotions during typically slow seasons</li>
-        </ul>
-      </div>
-      <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-        <h4 className="text-sm font-medium mb-2">Statistical Significance:</h4>
-        <ul className="text-sm text-gray-600 space-y-2">
-          {Object.entries(significanceResults).map(([dish, result]) => (
-            <li key={dish}>
-              - {dish}: {result.significant ? "Significant" : "Not significant"} seasonal variation. {result.significant ? "It's likely this variation is not just due to random chance. " : "It's possible any variation is due to random chance."}
-            </li>
-          ))}
-        </ul>
+
+      {/* Statistical Significance Table */}
+      <div className="mt-4">
+        <h4 className="text-xs font-medium text-gray-700 mb-2">
+          Seasonal Significance Analysis
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {topSeasonalDishes.length > 0 ? (
+            topSeasonalDishes.map((dish) => (
+              <div
+                key={dish}
+                className="bg-white rounded-md border border-gray-100 p-3 shadow-sm"
+              >
+                <div className="flex justify-between items-center mb-1">
+                  <div className="font-medium text-sm text-gray-800">
+                    {dish}
+                  </div>
+                  <SignificanceBadge
+                    isSignificant={significanceResults[dish].significant}
+                  />
+                </div>
+                <div className="text-xs text-gray-600">
+                  p-value: {significanceResults[dish].pValue.toFixed(4)}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  This dish shows statistically significant seasonal variation
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-2 bg-gray-50 p-3 rounded-md text-xs text-gray-700">
+              No dishes show statistically significant seasonal patterns.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

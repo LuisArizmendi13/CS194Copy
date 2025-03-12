@@ -1,16 +1,41 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { APP_NAME, NAV_LINKS } from "../constants/names";
-import { useAuth } from "../context/AuthContext"; // ✅ Import Auth Context
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { APP_NAME } from "../constants/names";
+import { useAuth } from "../context/AuthContext";
+
+// Updated navigation links to use the consolidated approach
+const NAV_LINKS = [
+  { name: "Dashboard", path: "/" },
+  { name: "Menus", path: "/menus" },
+  { name: "Analytics", path: "/analytics" },
+  { name: "Archive", path: "/archive" },
+  { name: "Orders", path: "/orders" },
+];
 
 export const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { signOut, user } = useAuth(); // ✅ Get signOut function & user state
+  const { signOut, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSignOut = () => {
     signOut();
-    navigate("/signin", { replace: true }); // ✅ Redirect after sign out
+    navigate("/signin", { replace: true });
+  };
+
+  // Check if a path is active
+  const isActive = (path) => {
+    // For menus, consider submenu paths as active too
+    if (path === "/menus") {
+      return (
+        location.pathname === "/menus" ||
+        location.pathname === "/mymenus" ||
+        location.pathname === "/dishes" ||
+        location.pathname === "/menu" ||
+        location.pathname.includes("/create-menu")
+      );
+    }
+    return location.pathname === path;
   };
 
   return (
@@ -36,7 +61,11 @@ export const Navbar = () => {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               ) : (
                 <svg
@@ -47,7 +76,11 @@ export const Navbar = () => {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                  />
                 </svg>
               )}
             </button>
@@ -64,7 +97,11 @@ export const Navbar = () => {
                   <Link
                     key={index}
                     to={link.path}
-                    className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                    className={`rounded-md px-3 py-2 text-sm font-medium ${
+                      isActive(link.path)
+                        ? "bg-gray-900 text-white"
+                        : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                    }`}
                   >
                     {link.name}
                   </Link>
@@ -87,19 +124,23 @@ export const Navbar = () => {
                     onClick={() => setMenuOpen(!menuOpen)}
                   >
                     <span className="sr-only">Open user menu</span>
-                    <img
-                      className="h-8 w-8 rounded-full"
-                      src="https://avatars.githubusercontent.com/u/183129612?v=4"
-                      alt="User avatar"
-                    />
+                    <div className="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center text-white font-bold">
+                      F
+                    </div>
                   </button>
                 </div>
                 {menuOpen && (
                   <div className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 ring-1 ring-black/5 focus:outline-none">
-                    <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700">
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm text-gray-700"
+                    >
                       Your Profile
                     </Link>
-                    <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700">
+                    <Link
+                      to="/settings"
+                      className="block px-4 py-2 text-sm text-gray-700"
+                    >
                       Settings
                     </Link>
                     <button
@@ -112,7 +153,10 @@ export const Navbar = () => {
                 )}
               </div>
             ) : (
-              <Link to="/signin" className="text-gray-300 hover:text-white px-4 py-2 text-sm">
+              <Link
+                to="/signin"
+                className="text-gray-300 hover:text-white px-4 py-2 text-sm"
+              >
                 Sign In
               </Link>
             )}
@@ -128,7 +172,11 @@ export const Navbar = () => {
               <Link
                 key={index}
                 to={link.path}
-                className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                className={`block rounded-md px-3 py-2 text-base font-medium ${
+                  isActive(link.path)
+                    ? "bg-gray-900 text-white"
+                    : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                }`}
               >
                 {link.name}
               </Link>

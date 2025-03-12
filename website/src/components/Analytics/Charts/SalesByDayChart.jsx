@@ -12,25 +12,14 @@ import {
 } from "recharts";
 
 const SalesByDayChart = ({ data }) => {
-  // Debug log
-  console.log("SalesByDayChart received data:", data);
-
-  // Defensive check for data
-  if (!Array.isArray(data)) {
-    console.error("SalesByDayChart: data is not an array");
-    return <div>Error: Invalid data format</div>;
-  }
-
-  // Aggregate sales by day of week with debug logging
+  // Aggregate sales by day of week
   const dayOfWeekSales = data.reduce((acc, dish) => {
     if (!dish.sales || !Array.isArray(dish.sales)) {
-      console.warn("Dish missing sales array:", dish);
       return acc;
     }
 
     dish.sales.forEach((sale) => {
       if (!sale.derived || !sale.derived.day_of_week) {
-        console.warn("Sale missing derived day_of_week:", sale);
         return;
       }
 
@@ -48,8 +37,6 @@ const SalesByDayChart = ({ data }) => {
     });
     return acc;
   }, {});
-
-  console.log("Aggregated day of week sales:", dayOfWeekSales);
 
   // Order days correctly
   const daysOrder = [
@@ -71,50 +58,66 @@ const SalesByDayChart = ({ data }) => {
       .slice(0, 3),
   }));
 
-  console.log("Formatted chart data:", formattedData);
+  // Small insight component for mobile view
+  const DayInsight = ({ dayData }) => (
+    <div className="bg-white rounded-md border border-gray-100 p-3 shadow-sm">
+      <div className="flex justify-between items-center mb-2">
+        <h4 className="font-medium text-sm text-gray-800">{dayData.day}</h4>
+        <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full font-medium">
+          {dayData.total} orders
+        </span>
+      </div>
+      {dayData.topDishes.length > 0 && (
+        <div className="text-xs text-gray-600">
+          <p className="font-medium mb-1">Top selling:</p>
+          <ul className="space-y-1">
+            {dayData.topDishes.map(([dish, count]) => (
+              <li key={dish} className="flex justify-between">
+                <span className="truncate">{dish}</span>
+                <span className="text-gray-500 ml-1">{count}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-2">Sales by Day of Week</h3>
-
-      <p className="text-gray-600 text-sm mb-4">
-        This chart shows how your sales vary across different days of the week.
-        Each bar represents the total number of orders for that day, helping you
-        identify your busiest and quietest days.
-      </p>
-
-      <div className="h-[400px]">
+      <div className="h-[350px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={formattedData}
             margin={{
-              top: 20,
-              right: 30,
-              left: 60,
-              bottom: 60,
+              top: 10,
+              right: 10,
+              left: 20,
+              bottom: 20,
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
             <XAxis
               dataKey="day"
-              tick={{ fill: "#4B5563", fontSize: 12 }}
+              tick={{ fill: "#6B7280", fontSize: 11 }}
               height={50}
             />
-            <YAxis tick={{ fill: "#4B5563", fontSize: 12 }}>
+            <YAxis tick={{ fill: "#6B7280", fontSize: 11 }}>
               <Label
                 value="Number of Orders"
                 angle={-90}
                 position="insideLeft"
-                offset={-50}
-                style={{ textAnchor: "middle", fill: "#4B5563", fontSize: 12 }}
+                offset={-10}
+                style={{ textAnchor: "middle", fill: "#6B7280", fontSize: 11 }}
               />
             </YAxis>
             <Tooltip
               contentStyle={{
                 backgroundColor: "#ffffff",
-                border: "1px solid #e5e7eb",
+                border: "1px solid #E5E7EB",
                 borderRadius: "6px",
-                fontSize: 12,
+                fontSize: 11,
+                boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
               }}
               formatter={(value, name) => {
                 if (name === "total")
@@ -123,58 +126,30 @@ const SalesByDayChart = ({ data }) => {
               }}
             />
             <Legend
-              wrapperStyle={{ fontSize: 12, paddingTop: "20px" }}
+              wrapperStyle={{ fontSize: 11, paddingTop: "10px" }}
               verticalAlign="bottom"
               height={36}
             />
             <Bar
               dataKey="total"
               fill="#4F46E5"
-              radius={[4, 4, 0, 0]}
+              radius={[2, 2, 0, 0]}
               name="Total Orders"
             />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Daily Insights */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {formattedData.map((dayData) => (
-          <div key={dayData.day} className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex justify-between items-center mb-2">
-              <h4 className="font-medium">{dayData.day}</h4>
-              <span className="text-sm text-gray-500">
-                {dayData.total} orders
-              </span>
-            </div>
-            {dayData.topDishes.length > 0 && (
-              <div className="text-sm text-gray-600">
-                <p>Top selling dishes:</p>
-                <ul className="list-disc ml-4">
-                  {dayData.topDishes.map(([dish, count]) => (
-                    <li key={dish}>
-                      {dish}: {count} orders
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
+      {/* Daily Insights - Grid for mobile and desktop */}
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+        {formattedData.slice(0, 4).map((dayData) => (
+          <DayInsight key={dayData.day} dayData={dayData} />
         ))}
       </div>
-
-      <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-        <h4 className="text-sm font-medium mb-2">What This Means For You:</h4>
-        <ul className="text-sm text-gray-600 space-y-2">
-          <li>• Schedule more staff on your busiest days (usually weekends)</li>
-          <li>
-            • Plan inventory orders based on which days typically need more
-            stock
-          </li>
-          <li>• Consider running promotions on slower days to boost sales</li>
-          <li>• Adjust prep work schedules based on expected daily volumes</li>
-          <li>• Use top-selling dishes per day to plan daily specials</li>
-        </ul>
+      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        {formattedData.slice(4).map((dayData) => (
+          <DayInsight key={dayData.day} dayData={dayData} />
+        ))}
       </div>
     </div>
   );

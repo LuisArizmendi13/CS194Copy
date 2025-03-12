@@ -26,7 +26,9 @@ const MenuCreationPage = () => {
 
     const restaurantId = getUserRestaurantId(session);
     if (!restaurantId) {
-      setErrorMessage("Error: No restaurant ID found. Please try logging in again.");
+      setErrorMessage(
+        "Error: No restaurant ID found. Please try logging in again."
+      );
       return;
     }
 
@@ -40,16 +42,20 @@ const MenuCreationPage = () => {
 
     try {
       setIsSaving(true);
-      await dynamoDb.put({
-        TableName: MENUS_TABLE_NAME,
-        Item: newMenu,
-      }).promise();
+      await dynamoDb
+        .put({
+          TableName: MENUS_TABLE_NAME,
+          Item: newMenu,
+        })
+        .promise();
 
       console.log("✅ Menu successfully saved:", newMenu);
       navigate("/menus");
     } catch (error) {
       console.error("❌ Error saving menu:", error);
-      setErrorMessage("An error occurred while saving the menu. Please try again.");
+      setErrorMessage(
+        "An error occurred while saving the menu. Please try again."
+      );
     } finally {
       setIsSaving(false);
     }
@@ -60,8 +66,13 @@ const MenuCreationPage = () => {
       <h2 className="text-2xl font-bold mb-4">Create a New Menu</h2>
       <p className="text-gray-600">Fill in the details to create your menu.</p>
 
-      <form onSubmit={handleSubmit} className="mt-6 bg-white shadow-md p-4 rounded">
-        {errorMessage && <p className="text-red-600 font-semibold mb-2">{errorMessage}</p>}
+      <form
+        onSubmit={handleSubmit}
+        className="mt-6 bg-white shadow-md p-4 rounded"
+      >
+        {errorMessage && (
+          <p className="text-red-600 font-semibold mb-2">{errorMessage}</p>
+        )}
 
         <FormInput
           label="Menu Name"
@@ -83,8 +94,10 @@ const MenuCreationPage = () => {
         <div className="mt-4">
           <h3 className="text-lg font-semibold">Selected Dishes:</h3>
           {selectedDishes.length > 0 ? (
-            selectedDishes.map(dish => (
-              <p key={dish.dishId} className="text-gray-700">{dish.name}</p>
+            selectedDishes.map((dish) => (
+              <p key={dish.dishId} className="text-gray-700">
+                {dish.name}
+              </p>
             ))
           ) : (
             <p className="text-gray-500">No dishes selected.</p>
@@ -102,7 +115,11 @@ const MenuCreationPage = () => {
 
         {/* Buttons Section */}
         <div className="flex justify-between items-center mt-6">
-          <button type="button" onClick={() => navigate("/menus")} className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+          <button
+            type="button"
+            onClick={() => navigate("/menus")}
+            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+          >
             ← Cancel
           </button>
           <div className="flex gap-4">
@@ -120,7 +137,11 @@ const MenuCreationPage = () => {
             </button>
 
             {/* Save Menu Button */}
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" disabled={isSaving}>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              disabled={isSaving}
+            >
               {isSaving ? "Saving..." : "Save Menu"}
             </button>
           </div>

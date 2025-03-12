@@ -1,18 +1,15 @@
-// In DishList.js
-import React from 'react';
-import DishBox from './DishBox';
+import React from "react";
+import DishBox from "./DishBox";
 
 const DishList = ({ dishes, onArchiveChange, onSaleRecorded, onDelete }) => {
   return (
-    <div>
-      {dishes.map((dish) => (
+    <div className="mt-4">
+      {dishes.map((dish, index) => (
         <DishBox
-          key={dish.dishId}
+          key={index}
           dish={dish}
-          onDishSelect={() => console.log('Selecting dish')} // Implement onDishSelect if needed
-          isSelected={false} // Implement isSelected if needed
-          isSelectable={false} // Implement isSelectable if needed
-          onDelete={onDelete}
+          onArchiveChange={onArchiveChange}
+          onSaleRecorded={onSaleRecorded}
         />
       ))}
     </div>
