@@ -5,7 +5,8 @@ import DeleteButtonWithConfirmation from "../DeleteButtonWithConfirmation";
 
 const MenuBox = ({ menu, onDelete, setLiveMenu }) => {
   const [showLiveMenuConfirmation, setShowLiveMenuConfirmation] = useState(false);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showLiveSuccessPopup, setShowLiveSuccessPopup] = useState(false);
+  const [showDeleteSuccessPopup, setShowDeleteSuccessPopup] = useState(false);
 
   // Unset any other live menus for this restaurant
   const unsetOtherLiveMenus = async (restaurantId, newLiveMenuId) => {
@@ -58,8 +59,8 @@ const MenuBox = ({ menu, onDelete, setLiveMenu }) => {
       sessionStorage.setItem("liveMenuID", menu.menuID);
       window.dispatchEvent(new Event("liveMenuUpdated"));
 
-      // Show success popup
-      setShowSuccessPopup(true);
+      // Show live menu success popup
+      setShowLiveSuccessPopup(true);
     } catch (error) {
       console.error("Error setting live menu:", error);
     }
@@ -106,7 +107,8 @@ const MenuBox = ({ menu, onDelete, setLiveMenu }) => {
                     })
                     .promise();
                   console.log(`✅ Successfully deleted menu: ${menu.menuID}`);
-                  onDelete(menu.menuID);
+                  // Instead of calling onDelete immediately, show success popup for deletion.
+                  setShowDeleteSuccessPopup(true);
                 } catch (error) {
                   console.error("❌ Error deleting menu from DynamoDB:", error);
                 }
@@ -143,16 +145,44 @@ const MenuBox = ({ menu, onDelete, setLiveMenu }) => {
         </div>
       )}
 
-      {/* Success Popup Modal */}
-      {showSuccessPopup && (
+      {/* Live Menu Success Popup */}
+      {showLiveSuccessPopup && (
         <div
           className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center z-50"
-          onClick={() => setShowSuccessPopup(false)}
+          onClick={() => setShowLiveSuccessPopup(false)}
         >
           <div className="bg-white p-4 rounded shadow-md text-center">
             <p className="mb-4">Live menu updated successfully!</p>
             <button
-              onClick={() => setShowSuccessPopup(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowLiveSuccessPopup(false);
+              }}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Success Popup */}
+      {showDeleteSuccessPopup && (
+        <div
+          className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center z-50"
+          onClick={() => {
+            setShowDeleteSuccessPopup(false);
+            onDelete(menu.menuID);
+          }}
+        >
+          <div className="bg-white p-4 rounded shadow-md text-center">
+            <p className="mb-4">Menu deleted successfully!</p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowDeleteSuccessPopup(false);
+                onDelete(menu.menuID);
+              }}
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
             >
               OK

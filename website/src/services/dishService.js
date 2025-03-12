@@ -16,5 +16,3 @@ export const fetchDishes = async (restaurantId) => {
 export const deleteDish = async (dishId) => {
   await dynamoDb.delete({ TableName: TABLE_NAME, Key: { dishId } }).promise();
 };
-
-// Add other dish operations as needed...
