@@ -1,4 +1,4 @@
-import React, {useMemo} from "react"; 
+import React, { useMemo } from "react";
 import jstat from 'jstat';
 
 import {
@@ -23,10 +23,15 @@ const COLORS = [
   "#06B6D4", // Cyan
 ];
 
-
+// Function to calculate statistical significance
 function calculateStatisticalSignificance(data) {
   const dishes = Object.keys(data[0]?.dishes || {});
   const months = data.map(d => d.month);
+
+  // Filter out NaN values before calculations
+  const filteredData = data.filter(item => {
+    return !Object.values(item.dishes).some(value => isNaN(value));
+  });
 
   function oneWayANOVA(groups) {
     const allValues = groups.flat();
@@ -49,10 +54,10 @@ function calculateStatisticalSignificance(data) {
   const results = {};
   dishes.forEach(dish => {
     const groups = months.map(month => {
-      const monthData = data.find(d => d.month === month);
-      return [monthData.dishes[dish]];
+      const monthData = filteredData.find(d => d.month === month);
+      return monthData ? [monthData.dishes[dish]] : [];
     });
-    const { fStat, pValue } = oneWayANOVA(groups);
+    const { fStat, pValue } = oneWayANOVA(groups.filter(group => group.length > 0));
     results[dish] = {
       fStatistic: fStat,
       pValue: pValue,
@@ -66,6 +71,11 @@ const SeasonalPerformanceChart = ({ data }) => {
   const dishes = Object.keys(data[0]?.dishes || {});
   const significanceResults = useMemo(() => calculateStatisticalSignificance(data), [data]);
 
+  // Filter out data points with NaN values
+  const filteredData = data.filter(item => {
+    return !Object.values(item.dishes).some(value => isNaN(value));
+  });
+
   return (
     <div>
       <h3 className="text-lg font-semibold mb-2">Seasonal Performance</h3>
@@ -77,7 +87,7 @@ const SeasonalPerformanceChart = ({ data }) => {
       <div className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={data}
+            data={filteredData}
             margin={{
               top: 20,
               right: 30,
@@ -107,7 +117,10 @@ const SeasonalPerformanceChart = ({ data }) => {
                 borderRadius: "6px",
                 fontSize: 12,
               }}
-              formatter={(value) => [`${value} orders`, "Orders"]}
+              formatter={(value) => {
+                if (isNaN(value)) return ["", "Orders"];
+                return [`${value} orders`, "Orders"];
+              }}
             />
             <Legend
               wrapperStyle={{ fontSize: 12, paddingTop: "20px" }}
@@ -144,8 +157,7 @@ const SeasonalPerformanceChart = ({ data }) => {
         <ul className="text-sm text-gray-600 space-y-2">
           {Object.entries(significanceResults).map(([dish, result]) => (
             <li key={dish}>
-              - {dish}: {result.significant ? "Significant" : "Not significant"} seasonal variation 
-              (p-value: {result.pValue.toFixed(4)})
+              - {dish}: {result.significant ? "Significant" : "Not significant"} seasonal variation. {result.significant ? "It's likely this variation is not just due to random chance. " : "It's possible any variation is due to random chance."}
             </li>
           ))}
         </ul>
