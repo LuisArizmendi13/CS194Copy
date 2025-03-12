@@ -69,32 +69,33 @@ function getMonth(date) {
   ][date.getMonth()];
 }
 
-const API_KEY = '1773fa0734e1ab6c35a49bcc67d52198';
+const API_KEY = "1773fa0734e1ab6c35a49bcc67d52198";
 
 export async function getLocation(location) {
-  const city = location.city
-  const state = location.state
+  const city = location.city;
+  const state = location.state;
   const url = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${state},US&limit=1&appid=${API_KEY}`;
   try {
     const response = await fetch(url);
     const data = await response.json();
     if (data && data.length > 0) {
       return {
-      latitude : data[0].lat,
-      longitude : data[0].lon
-    };
+        latitude: data[0].lat,
+        longitude: data[0].lon,
+      };
     }
     return null;
   } catch (error) {
-    console.error('Error fetching location:', error);
-    return null;  
+    console.error("Error fetching location:", error);
+    return null;
   }
 }
 
-const WEATHER_KEY = 'd73de1b5e4944cd295933005250303';
+const WEATHER_KEY = "d73de1b5e4944cd295933005250303";
 
 export async function getWeather(date, location) {
-  const url = 'https://api.weatherapi.com/v1/current.json?key=d73de1b5e4944cd295933005250303&q=${location.city}&aqi=no'
+  const url =
+    "https://api.weatherapi.com/v1/current.json?key=d73de1b5e4944cd295933005250303&q=${location.city}&aqi=no";
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -103,7 +104,7 @@ export async function getWeather(date, location) {
     const data = await response.json();
     return getWeatherDescription(data.current.condition.code);
   } catch (error) {
-    console.error('Error fetching weather:', error);
+    console.error("Error fetching weather:", error);
     return "Failed to fetch weather data";
   }
 }
@@ -157,7 +158,7 @@ export function getWeatherDescription(condition) {
     1273: "Patchy light rain with thunder",
     1276: "Moderate or heavy rain with thunder",
     1279: "Patchy light snow with thunder",
-    1282: "Moderate or heavy snow with thunder"
+    1282: "Moderate or heavy snow with thunder",
   };
   return weatherCodes[condition] || "Unknown";
 }

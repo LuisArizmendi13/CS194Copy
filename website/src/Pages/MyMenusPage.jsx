@@ -49,11 +49,11 @@ const MyMenusPage = () => {
       {/* ✅ Buttons Section - Side by Side with a Divider */}
       <div className="mb-6 flex items-center justify-end space-x-4 border-b pb-4">
         <NewMenuButton />
-        <div className="h-6 border-l border-gray-400"></div> {/* ✅ Vertical Divider */}
+        <div className="h-6 border-l border-gray-400"></div>{" "}
+        {/* ✅ Vertical Divider */}
         <button
           onClick={() => setShowUploadPopup(true)}
           className="px-4 py-2 bg-[#FA8072] text-white rounded hover:bg-[#E96B5F]"
-
         >
           Generate
         </button>
@@ -67,7 +67,9 @@ const MyMenusPage = () => {
       )}
 
       {/* ✅ Upload Popup (Shows when `showUploadPopup` is true) */}
-      {showUploadPopup && <UploadMenuPopup onClose={() => setShowUploadPopup(false)} />}
+      {showUploadPopup && (
+        <UploadMenuPopup onClose={() => setShowUploadPopup(false)} />
+      )}
     </div>
   );
 };

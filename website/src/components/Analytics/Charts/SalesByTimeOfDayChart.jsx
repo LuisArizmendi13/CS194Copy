@@ -45,62 +45,72 @@ const SalesByTimeOfDayChart = ({ data }) => {
     percentage: ((item.total / totalSales) * 100).toFixed(1),
   }));
 
+  // Distribution component
+  const TimeDistributionCard = ({ item }) => (
+    <div className="bg-white rounded-md border border-gray-100 p-3 shadow-sm">
+      <div className="text-xs font-medium text-gray-500 mb-1">{item.time}</div>
+      <div className="flex items-end justify-between">
+        <div className="text-base font-semibold text-gray-800">
+          {item.percentage}%
+        </div>
+        <div className="text-xs text-gray-500">{item.total} orders</div>
+      </div>
+      <div className="w-full h-2 bg-gray-100 rounded-full mt-2">
+        <div
+          className="h-full bg-amber-500 rounded-full"
+          style={{ width: `${item.percentage}%` }}
+        ></div>
+      </div>
+    </div>
+  );
+
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-2">
-        Sales Distribution by Time of Day
-      </h3>
-
-      <p className="text-gray-600 text-sm mb-4">
-        This chart shows how your sales are spread throughout the day. Each bar
-        represents the total number of orders during different times of day. The
-        percentage cards below show how your sales are distributed.
-      </p>
-
-      <div className="h-[400px]">
+      <div className="h-[350px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={formattedData}
             margin={{
-              top: 20,
-              right: 30,
-              left: 60,
-              bottom: 60,
+              top: 10,
+              right: 10,
+              left: 20,
+              bottom: 20,
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
             <XAxis
               dataKey="time"
-              tick={{ fill: "#4B5563", fontSize: 12 }}
+              tick={{ fill: "#6B7280", fontSize: 11 }}
               height={50}
             />
-            <YAxis tick={{ fill: "#4B5563", fontSize: 12 }}>
+            <YAxis tick={{ fill: "#6B7280", fontSize: 11 }}>
               <Label
                 value="Number of Orders"
                 angle={-90}
                 position="insideLeft"
-                offset={-50}
-                style={{ textAnchor: "middle", fill: "#4B5563", fontSize: 12 }}
+                offset={-10}
+                style={{ textAnchor: "middle", fill: "#6B7280", fontSize: 11 }}
               />
             </YAxis>
             <Tooltip
               contentStyle={{
                 backgroundColor: "#ffffff",
-                border: "1px solid #e5e7eb",
+                border: "1px solid #E5E7EB",
                 borderRadius: "6px",
-                fontSize: 12,
+                fontSize: 11,
+                boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
               }}
               formatter={(value) => [`${value} orders`, "Total Orders"]}
             />
             <Legend
-              wrapperStyle={{ fontSize: 12, paddingTop: "20px" }}
+              wrapperStyle={{ fontSize: 11, paddingTop: "10px" }}
               verticalAlign="bottom"
               height={36}
             />
             <Bar
               dataKey="total"
               fill="#F59E0B"
-              radius={[4, 4, 0, 0]}
+              radius={[2, 2, 0, 0]}
               name="Total Orders"
             />
           </BarChart>
@@ -108,29 +118,15 @@ const SalesByTimeOfDayChart = ({ data }) => {
       </div>
 
       {/* Distribution Summary */}
-      <div className="mt-6">
-        <h4 className="text-sm font-medium mb-3">Sales Distribution</h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="mt-4">
+        <h4 className="text-xs font-medium text-gray-700 mb-2">
+          Sales Distribution
+        </h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {percentages.map((item) => (
-            <div
-              key={item.time}
-              className="bg-gray-50 p-4 rounded-lg shadow-sm"
-            >
-              <div className="text-sm text-gray-600">{item.time}</div>
-              <div className="text-lg font-semibold">{item.percentage}%</div>
-              <div className="text-sm text-gray-500">{item.total} orders</div>
-            </div>
+            <TimeDistributionCard key={item.time} item={item} />
           ))}
         </div>
-      </div>
-
-      <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-        <h4 className="text-sm font-medium mb-2">What This Means For You:</h4>
-        <ul className="text-sm text-gray-600 space-y-2">
-          <li>• Use peak times to ensure you have enough staff scheduled</li>
-          <li>• Consider special promotions during slower periods</li>
-          <li>• Plan prep work during less busy times</li>
-        </ul>
       </div>
     </div>
   );

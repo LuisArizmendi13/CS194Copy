@@ -22,78 +22,60 @@ const SalesTrendChart = ({ data }) => {
   };
 
   return (
-    <div>
-      <h3 className="text-lg font-semibold mb-2">Sales Trends Over Time</h3>
-
-      <p className="text-gray-600 text-sm mb-4">
-        This chart tracks your total sales over time. The line shows how your
-        order numbers change from month to month, helping you spot trends and
-        seasonal patterns.
-      </p>
-
-      <div className="h-[400px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={data}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 60,
-              bottom: 60,
+    <div className="h-[350px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart
+          data={data}
+          margin={{
+            top: 10,
+            right: 10,
+            left: 20,
+            bottom: 20,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+          <XAxis
+            dataKey="month"
+            tickFormatter={formatMonth}
+            height={50}
+            tick={{ fill: "#6B7280", fontSize: 11 }}
+          />
+          <YAxis tick={{ fill: "#6B7280", fontSize: 11 }}>
+            <Label
+              value="Number of Orders"
+              angle={-90}
+              position="insideLeft"
+              offset={-10}
+              style={{ textAnchor: "middle", fill: "#6B7280", fontSize: 11 }}
+            />
+          </YAxis>
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#ffffff",
+              border: "1px solid #E5E7EB",
+              borderRadius: "6px",
+              fontSize: 11,
+              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
             }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="month"
-              tickFormatter={formatMonth}
-              height={50}
-              tick={{ fill: "#4B5563", fontSize: 12 }}
-            />
-            <YAxis tick={{ fill: "#4B5563", fontSize: 12 }}>
-              <Label
-                value="Number of Orders"
-                angle={-90}
-                position="insideLeft"
-                offset={-50}
-                style={{ textAnchor: "middle", fill: "#4B5563", fontSize: 12 }}
-              />
-            </YAxis>
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#ffffff",
-                border: "1px solid #e5e7eb",
-                borderRadius: "6px",
-                fontSize: 12,
-              }}
-              labelFormatter={formatMonth}
-              formatter={(value) => [`${value} orders`, "Total Sales"]}
-            />
-            <Legend
-              wrapperStyle={{ fontSize: 12, paddingTop: "20px" }}
-              verticalAlign="bottom"
-              height={36}
-            />
-            <Line
-              type="monotone"
-              dataKey="totalSales"
-              stroke="#6366F1"
-              strokeWidth={2}
-              dot={{ r: 4, fill: "#6366F1" }}
-              activeDot={{ r: 6 }}
-              name="Total Orders"
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-        <h4 className="text-sm font-medium mb-2">What This Means For You:</h4>
-        <ul className="text-sm text-gray-600 space-y-2">
-          <li>• Look for patterns in your busy and slow months</li>
-          <li>• Use peak periods to plan inventory and staffing</li>
-          <li>• Consider special promotions during typically slower months</li>
-        </ul>
-      </div>
+            labelFormatter={formatMonth}
+            formatter={(value) => [`${value} orders`, "Total Sales"]}
+          />
+          <Legend
+            wrapperStyle={{ fontSize: 11, paddingTop: "10px" }}
+            verticalAlign="bottom"
+            height={36}
+          />
+          <Line
+            type="monotone"
+            dataKey="totalSales"
+            stroke="#6366F1"
+            strokeWidth={2}
+            dot={{ r: 3, fill: "#6366F1" }}
+            activeDot={{ r: 5 }}
+            name="Total Orders"
+          />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 };
