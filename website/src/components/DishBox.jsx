@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const DishBox = ({ dish, onDishSelect, isSelected, isSelectable }) => {
+const DishBox = ({ dish, onDishSelect, isSelected, isSelectable, onDelete }) => {
   const [showIngredients, setShowIngredients] = useState(false);
 
   return dish ? (
@@ -35,6 +35,9 @@ const DishBox = ({ dish, onDishSelect, isSelected, isSelectable }) => {
         )}
         <button onClick={() => setShowIngredients(!showIngredients)} className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900">
           {showIngredients ? "Hide Ingredients" : "Show Ingredients"}
+        </button>
+        <button onClick={() => onDelete(dish.dishId)} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+          Delete
         </button>
       </div>
     </div>

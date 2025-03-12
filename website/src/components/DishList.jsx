@@ -1,7 +1,7 @@
 import React from "react";
 import DishBox from "./DishBox";
 
-const DishList = ({ dishes, onArchiveChange, onSaleRecorded }) => {
+const DishList = ({ dishes, onArchiveChange, onSaleRecorded, onDelete }) => {
   return (
     <div className="mt-4">
       {dishes.map((dish, index) => (

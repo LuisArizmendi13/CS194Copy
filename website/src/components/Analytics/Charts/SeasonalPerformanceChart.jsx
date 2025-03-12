@@ -27,6 +27,11 @@ function calculateStatisticalSignificance(data) {
   const dishes = Object.keys(data[0]?.dishes || {});
   const months = data.map((d) => d.month);
 
+  // Filter out NaN values before calculations
+  const filteredData = data.filter((item) => {
+    return !Object.values(item.dishes).some((value) => isNaN(value));
+  });
+
   function oneWayANOVA(groups) {
     const allValues = groups.flat();
     const grandMean = jstat.mean(allValues);
@@ -51,7 +56,9 @@ function calculateStatisticalSignificance(data) {
       const monthData = data.find((d) => d.month === month);
       return [monthData.dishes[dish]];
     });
-    const { fStat, pValue } = oneWayANOVA(groups);
+    const { fStat, pValue } = oneWayANOVA(
+      groups.filter((group) => group.length > 0)
+    );
     results[dish] = {
       fStatistic: fStat,
       pValue: pValue,
@@ -97,12 +104,17 @@ const SeasonalPerformanceChart = ({ data }) => {
     </span>
   );
 
+  // Filter out data points with NaN values
+  const filteredData = data.filter((item) => {
+    return !Object.values(item.dishes).some((value) => isNaN(value));
+  });
+
   return (
     <div>
       <div className="h-[350px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={data}
+            data={filteredData}
             margin={{
               top: 10,
               right: 10,

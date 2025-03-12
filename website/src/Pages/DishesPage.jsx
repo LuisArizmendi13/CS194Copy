@@ -65,6 +65,21 @@ const DishesPage = () => {
     );
   };
 
+  const handleDelete = async (dishId) => {
+    try {
+      // Delete the dish from DynamoDB
+      await dynamoDb.delete({
+        TableName: TABLE_NAME,
+        Key: { dishId: dishId },
+      }).promise();
+
+      // Update the local state by filtering out the deleted dish
+      setDishes(prevDishes => prevDishes.filter(d => d.dishId !== dishId));
+    } catch (error) {
+      console.error("Error deleting dish:", error);
+    }
+  };
+
   return (
     <div className="p-6 mx-auto" style={{ maxWidth: '1124px' }}>
       <div className="flex justify-end mb-4">
@@ -81,6 +96,7 @@ const DishesPage = () => {
           )
         }
         onSaleRecorded={updateSaleCount}
+        onDelete={handleDelete} // Pass handleDelete to DishList
       />
 
       {showPopup && <AddDishPopup onClose={() => setShowPopup(false)} onSave={addDish} />}

@@ -1,3 +1,4 @@
+// analyticspage.jsx
 import React, { useState, useEffect } from "react";
 import salesData from "./sales_data.json";
 import { processSalesData } from "./processSalesData";
@@ -14,6 +15,7 @@ const AnalyticsPage = () => {
   const [processedData, setProcessedData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [seasonalData, setSeasonalData] = useState([]);
+  const [weatherSalesData, setWeatherSalesData] = useState([]); // New state for weather sales data
   const [error, setError] = useState(null);
   const [dateRange, setDateRange] = useState("last30days");
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(true);
@@ -43,64 +45,83 @@ const AnalyticsPage = () => {
 
   useEffect(() => {
     try {
-      const enrichedData = processSalesData(salesData);
-      setProcessedData(enrichedData);
+      const location = { city: "New York", state: "NY" }; // Example location
+      processSalesData(salesData, location)
+        .then((enrichedData) => {
+          if (Array.isArray(enrichedData)) {
+            setProcessedData(enrichedData);
 
-      // Prepare monthly data for SalesTrendChart
-      const salesByMonth = enrichedData.reduce((acc, dish) => {
-        dish.sales.forEach((sale) => {
-          const date = new Date(sale.time);
-          const monthKey = `${date.getFullYear()}-${String(
-            date.getMonth() + 1
-          ).padStart(2, "0")}`;
+            // Prepare monthly data for SalesTrendChart
+            const salesByMonth = enrichedData.reduce((acc, dish) => {
+              dish.sales.forEach((sale) => {
+                const date = new Date(sale.time);
+                const monthKey = `${date.getFullYear()}-${String(
+                  date.getMonth() + 1
+                ).padStart(2, "0")}`;
 
-          if (!acc[monthKey]) {
-            acc[monthKey] = {
-              month: monthKey,
-              totalSales: 0,
-              revenue: 0,
-            };
+                if (!acc[monthKey]) {
+                  acc[monthKey] = {
+                    month: monthKey,
+                    totalSales: 0,
+                    revenue: 0,
+                  };
+                }
+
+                acc[monthKey].totalSales += 1;
+                acc[monthKey].revenue += sale.price;
+              });
+              return acc;
+            }, {});
+
+            // Prepare seasonal data (monthly sales per dish)
+            const seasonalSales = enrichedData.reduce((acc, dish) => {
+              dish.sales.forEach((sale) => {
+                const date = new Date(sale.time);
+                const monthKey = `${date.getFullYear()}-${String(
+                  date.getMonth() + 1
+                ).padStart(2, "0")}`;
+
+                if (!acc[monthKey]) {
+                  acc[monthKey] = {
+                    month: monthKey,
+                    dishes: {},
+                  };
+                }
+
+                if (!acc[monthKey].dishes[dish.name]) {
+                  acc[monthKey].dishes[dish.name] = 0;
+                }
+
+                acc[monthKey].dishes[dish.name] += 1;
+              });
+              return acc;
+            }, {});
+
+            const monthlyTrends = Object.values(salesByMonth).sort((a, b) =>
+              a.month.localeCompare(b.month)
+            );
+            setMonthlyData(monthlyTrends);
+
+            const seasonalTrends = Object.values(seasonalSales).sort((a, b) =>
+              a.month.localeCompare(b.month)
+            );
+            setSeasonalData(seasonalTrends);
+
+            // Prepare weather sales data
+            if (enrichedData.length > 0) {
+              const weatherData = prepareWeatherSalesData(enrichedData);
+              setWeatherSalesData(weatherData);
+            }
+          } else {
+            console.error("Processed data is not an array.");
           }
-
-          acc[monthKey].totalSales += 1;
-          acc[monthKey].revenue += sale.price;
+        })
+        .catch((err) => {
+          console.error("Error processing data:", err);
+          setError(
+            "There was an error loading your analytics. Please try refreshing the page."
+          );
         });
-        return acc;
-      }, {});
-
-      // Prepare seasonal data (monthly sales per dish)
-      const seasonalSales = enrichedData.reduce((acc, dish) => {
-        dish.sales.forEach((sale) => {
-          const date = new Date(sale.time);
-          const monthKey = `${date.getFullYear()}-${String(
-            date.getMonth() + 1
-          ).padStart(2, "0")}`;
-
-          if (!acc[monthKey]) {
-            acc[monthKey] = {
-              month: monthKey,
-              dishes: {},
-            };
-          }
-
-          if (!acc[monthKey].dishes[dish.name]) {
-            acc[monthKey].dishes[dish.name] = 0;
-          }
-
-          acc[monthKey].dishes[dish.name] += 1;
-        });
-        return acc;
-      }, {});
-
-      const monthlyTrends = Object.values(salesByMonth).sort((a, b) =>
-        a.month.localeCompare(b.month)
-      );
-      setMonthlyData(monthlyTrends);
-
-      const seasonalTrends = Object.values(seasonalSales).sort((a, b) =>
-        a.month.localeCompare(b.month)
-      );
-      setSeasonalData(seasonalTrends);
     } catch (err) {
       console.error("Error processing data:", err);
       setError(
