@@ -22,7 +22,7 @@ export const fetchMenus = async (restaurantId) => {
 };
 
 // Delete a menu by menuID.
-export const deleteMenu = async (menuID) => {
+export const deleteMenuFromDatabase = async (menuID) => {
   await dynamoDb.delete({ TableName: MENUS_TABLE_NAME, Key: { menuID } }).promise();
 };
 
@@ -63,3 +63,23 @@ export const setLiveMenu = async (menu, restaurantId) => {
   }
   await Promise.all(updatePromises);
 };
+
+export const updateMenuInDatabase = async (menu) => {
+  if (!menu || !menu.menuID) {
+    throw new Error("❌ Cannot update menu: Invalid menu data.");
+  }
+
+  await dynamoDb.update({
+    TableName: MENUS_TABLE_NAME,
+    Key: { menuID: menu.menuID },
+    UpdateExpression: "SET menuName = :name, description = :desc, dishes = :dishes",
+    ExpressionAttributeValues: {
+      ":name": menu.menuName,
+      ":desc": menu.description,
+      ":dishes": menu.dishes || [],
+    },
+  }).promise();
+
+  return menu; // ✅ Returns updated menu for UI state updates
+};
+

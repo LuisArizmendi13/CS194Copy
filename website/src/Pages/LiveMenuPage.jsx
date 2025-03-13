@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { dynamoDb, MENUS_TABLE_NAME, getUserRestaurantId } from "../aws-config";
-import { useAuth } from "../context/AuthContext";
+import React, { useState, useEffect } from "react";
+import { dynamoDb, MENUS_TABLE_NAME } from "../aws-config";
 
 const LiveMenuPage = () => {
-  const { session } = useAuth();
   const [liveMenu, setLiveMenu] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState("all");
 
-  const fetchLiveMenu = useCallback(async () => {
+  const fetchLiveMenu = async () => {
     try {
       const data = await dynamoDb
         .scan({ TableName: MENUS_TABLE_NAME })
@@ -27,18 +25,17 @@ const LiveMenuPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [session]);
+  };
 
   useEffect(() => {
     fetchLiveMenu();
 
-    const handleLiveMenuUpdated = () => {
-      fetchLiveMenu();
-    };
-    window.addEventListener("liveMenuUpdated", handleLiveMenuUpdated);
+    const handleStorageUpdate = () => fetchLiveMenu();
+    window.addEventListener("liveMenuUpdated", handleStorageUpdate);
+
     return () =>
-      window.removeEventListener("liveMenuUpdated", handleLiveMenuUpdated);
-  }, [fetchLiveMenu]);
+      window.removeEventListener("liveMenuUpdated", handleStorageUpdate);
+  }, []);
 
   // Group dishes by category
   const getDishesByCategory = () => {

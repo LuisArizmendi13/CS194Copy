@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { fetchDishes } from "../services/dishService";
+import { fetchDishes,addDishToDatabase  } from "../services/dishService";
 import { getUserRestaurantId } from "../aws-config";
+
 
 const useDishes = (user, session) => {
   const [dishes, setDishes] = useState([]);
@@ -8,7 +9,6 @@ const useDishes = (user, session) => {
   const [error, setError] = useState(null);
 
   const loadDishes = useCallback(async () => {
-    // Ensure both user and session exist before fetching.
     if (!user || !session) return;
     try {
       const restaurantId = getUserRestaurantId(session);
@@ -24,6 +24,16 @@ const useDishes = (user, session) => {
   useEffect(() => {
     loadDishes();
   }, [loadDishes]);
+
+  const addDish = async (dish) => {
+    try {
+      const restaurantId = getUserRestaurantId(session);
+      const newDish = await addDishToDatabase(dish, restaurantId);
+      setDishes((prevDishes) => [...prevDishes, newDish]); // ✅ Update UI immediately
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   return { dishes, loading, error, reload: loadDishes };
 };

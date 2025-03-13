@@ -1,200 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import {
-  dynamoDb,
-  MENUS_TABLE_NAME,
-  TABLE_NAME,
-  getUserRestaurantId,
-} from "../aws-config";
 import { useNavigate, useLocation } from "react-router-dom";
+import useMenus from "../hooks/useMenus";
+import useDishes from "../hooks/useDishes";
 import AddDishPopup from "../components/AddDishPopup";
+import { getCategories, getFilteredDishes } from "../utils/menuHelpers";
+
 
 const MenusPage = () => {
   const { user, session } = useAuth();
-  const [activeTab, setActiveTab] = useState("live");
-  const [menus, setMenus] = useState([]);
-  const [dishes, setDishes] = useState([]);
-  const [liveMenu, setLiveMenu] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [showDishPopup, setShowDishPopup] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [showHelpText, setShowHelpText] = useState(true);
+  const { menus, liveMenu, loading: menusLoading, deleteMenu, setMenuAsLive, addDishToMenu} = useMenus(session);
+  const { dishes, loading: dishesLoading, addDish, reload: reloadDishes } = useDishes(user, session);
+  const [activeTab, setActiveTab] = useState("live");  // ✅ UI-related state stays
+  const [showDishPopup, setShowDishPopup] = useState(false);  // ✅ UI-related state stays
+  const [selectedCategory, setSelectedCategory] = useState("all");  // ✅ UI-related state stays
+  const [showHelpText, setShowHelpText] = useState(true);  // ✅ UI-related state stays
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Check for URL parameters
-  const queryParams = new URLSearchParams(location.search);
-  const tabParam = queryParams.get("tab");
-
-  // Get unique categories from menu items
-  const getCategories = () => {
-    if (!liveMenu || !liveMenu.dishes) return [];
-
-    const categoriesSet = new Set(
-      liveMenu.dishes.map((dish) => dish.category || "Uncategorized")
-    );
-    return ["all", ...Array.from(categoriesSet)];
-  };
-
-  // Filter dishes by selected category
-  const getFilteredDishes = () => {
-    if (!liveMenu || !liveMenu.dishes) return [];
-    if (selectedCategory === "all") return liveMenu.dishes;
-    return liveMenu.dishes.filter((dish) => dish.category === selectedCategory);
-  };
+  const categories = getCategories(liveMenu);
+  const filteredDishes = getFilteredDishes(liveMenu, selectedCategory);
 
   useEffect(() => {
-    // Set active tab based on URL parameter if present
-    if (tabParam) {
-      if (
-        tabParam === "live" ||
-        tabParam === "menus" ||
-        tabParam === "dishes"
-      ) {
-        setActiveTab(tabParam);
-      }
+    const queryParams = new URLSearchParams(location.search);
+    const tabParam = queryParams.get("tab");
+  
+    if (tabParam && ["live", "menus", "dishes"].includes(tabParam) && tabParam !== activeTab) {
+      setActiveTab(tabParam);
     }
-  }, [tabParam]);
+  }, [location.search]);  
 
-  useEffect(() => {
-    if (!user || !session) return;
 
-    const fetchData = async () => {
-      try {
-        const restaurantId = getUserRestaurantId(session);
-        if (!restaurantId) {
-          console.warn("❌ No restaurantId found!");
-          setLoading(false);
-          return;
-        }
+  if (menusLoading || dishesLoading) {
+    return <div className="flex justify-center items-center min-h-screen bg-gray-100">Loading...</div>;
+  }
 
-        // Fetch menus
-        const menuParams = {
-          TableName: MENUS_TABLE_NAME,
-          FilterExpression: "restaurantId = :rId",
-          ExpressionAttributeValues: { ":rId": restaurantId },
-        };
 
-        const menuData = await dynamoDb.scan(menuParams).promise();
-        const menusArray = menuData.Items || [];
-        setMenus(menusArray);
-
-        // Fetch dishes
-        const dishParams = {
-          TableName: TABLE_NAME,
-          FilterExpression: "restaurantId = :rId",
-          ExpressionAttributeValues: { ":rId": restaurantId },
-        };
-
-        const dishData = await dynamoDb.scan(dishParams).promise();
-        setDishes(dishData.Items || []);
-
-        // Find the live menu if any
-        const liveMenuID = sessionStorage.getItem("liveMenuID");
-        const currentLiveMenu =
-          menusArray.find((menu) => menu.menuID === liveMenuID) ||
-          menusArray.find((menu) => menu.isLive);
-        setLiveMenu(currentLiveMenu);
-      } catch (error) {
-        console.error("❌ Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [user, session]);
-
-  const addDish = async (dish) => {
-    try {
-      const restaurantId = getUserRestaurantId(session);
-      if (!restaurantId) {
-        console.error("❌ Cannot save dish: No restaurantId found!");
-        return;
-      }
-
-      const dishWithRestaurant = { ...dish, restaurantId };
-
-      // Save to dishes table
-      await dynamoDb
-        .put({
-          TableName: TABLE_NAME,
-          Item: dishWithRestaurant,
-        })
-        .promise();
-
-      // Also add to current live menu if one exists
-      if (liveMenu) {
-        const updatedMenu = {
-          ...liveMenu,
-          dishes: [...(liveMenu.dishes || []), dishWithRestaurant],
-        };
-
-        await dynamoDb
-          .put({
-            TableName: MENUS_TABLE_NAME,
-            Item: updatedMenu,
-          })
-          .promise();
-
-        setLiveMenu(updatedMenu);
-
-        // Update menus array
-        setMenus(
-          menus.map((menu) =>
-            menu.menuID === updatedMenu.menuID ? updatedMenu : menu
-          )
-        );
-      }
-
-      setDishes([...dishes, dishWithRestaurant]);
-    } catch (error) {
-      console.error("Error saving dish:", error);
-    }
-  };
-
-  const setMenuAsLive = async (menuId) => {
-    try {
-      // First, unset the current live menu
-      if (liveMenu) {
-        const currentLiveMenuUpdated = { ...liveMenu, isLive: false };
-        await dynamoDb
-          .put({
-            TableName: MENUS_TABLE_NAME,
-            Item: currentLiveMenuUpdated,
-          })
-          .promise();
-      }
-
-      // Set the new menu as live
-      const newLiveMenu = menus.find((menu) => menu.menuID === menuId);
-      if (newLiveMenu) {
-        const updatedMenu = { ...newLiveMenu, isLive: true };
-        await dynamoDb
-          .put({
-            TableName: MENUS_TABLE_NAME,
-            Item: updatedMenu,
-          })
-          .promise();
-
-        // Update state
-        setLiveMenu(updatedMenu);
-        setMenus(
-          menus.map((menu) =>
-            menu.menuID === menuId ? updatedMenu : { ...menu, isLive: false }
-          )
-        );
-
-        // Store live menu ID in session storage
-        sessionStorage.setItem("liveMenuID", menuId);
-
-        // Trigger event to update other components
-        window.dispatchEvent(new Event("liveMenuUpdated"));
-      }
-    } catch (error) {
-      console.error("Error setting menu as live:", error);
-    }
-  };
 
   const handleEditMenu = (menuID) => {
     // Navigate to the edit page for this specific menu
@@ -205,14 +45,6 @@ const MenusPage = () => {
     return (
       <div className="text-center p-10 text-xl font-semibold text-gray-700">
         Redirecting to Sign In...
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
       </div>
     );
   }
@@ -688,53 +520,7 @@ const MenusPage = () => {
                         {liveMenu && (
                           <button
                             className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
-                            onClick={() => {
-                              // Add to live menu functionality
-                              if (!liveMenu.dishes) {
-                                liveMenu.dishes = [];
-                              }
-
-                              // Check if dish is already in the menu
-                              const isDishInMenu = liveMenu.dishes.some(
-                                (d) => d.dishId === dish.dishId
-                              );
-
-                              if (!isDishInMenu) {
-                                const updatedMenu = {
-                                  ...liveMenu,
-                                  dishes: [...liveMenu.dishes, dish],
-                                };
-
-                                dynamoDb
-                                  .put({
-                                    TableName: MENUS_TABLE_NAME,
-                                    Item: updatedMenu,
-                                  })
-                                  .promise()
-                                  .then(() => {
-                                    setLiveMenu(updatedMenu);
-                                    setMenus(
-                                      menus.map((m) =>
-                                        m.menuID === updatedMenu.menuID
-                                          ? updatedMenu
-                                          : m
-                                      )
-                                    );
-                                    alert(
-                                      `${dish.name} added to ${liveMenu.name}`
-                                    );
-                                  })
-                                  .catch((err) => {
-                                    console.error(
-                                      "Error adding dish to menu:",
-                                      err
-                                    );
-                                    alert("Error adding dish to menu");
-                                  });
-                              } else {
-                                alert(`${dish.name} is already in the menu`);
-                              }
-                            }}
+                            onClick={() => addDishToMenu(dish)}
                           >
                             Add to Menu
                           </button>
@@ -743,7 +529,7 @@ const MenusPage = () => {
                     </div>
                   </div>
                 ))}
-              </div>
+                </div>
             )}
           </div>
         )}
