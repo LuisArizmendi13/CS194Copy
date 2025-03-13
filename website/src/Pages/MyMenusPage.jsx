@@ -28,7 +28,8 @@ const MyMenusPage = () => {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-6 flex items-center justify-end space-x-4 border-b pb-4">
         <NewMenuButton />
-        <div className="h-6 border-l border-gray-400"></div>
+        <div className="h-6 border-l border-gray-400"></div>{" "}
+        {/* ✅ Vertical Divider */}
         <button
           onClick={() => setShowUploadPopup(true)}
           className="px-4 py-2 bg-[#FA8072] text-white rounded hover:bg-[#E96B5F]"
@@ -45,6 +46,7 @@ const MyMenusPage = () => {
         <MenuList menus={menus} onDelete={handleDeleteMenu} />
       )}
 
+      {/* ✅ Upload Popup (Shows when `showUploadPopup` is true) */}
       {showUploadPopup && (
         <UploadMenuPopup onClose={() => setShowUploadPopup(false)} />
       )}
