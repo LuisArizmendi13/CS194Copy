@@ -12,15 +12,16 @@ export async function processSalesData(rawData, location) {
       dish.sales.map(async (sale) => {
         const saleDate = new Date(sale.time);
         const today = new Date();
-
+    
         let weatherCondition;
         if (saleDate.toDateString() === today.toDateString()) {
-          weatherCondition = await getWeather(today, location);
+          // Fetch current weather
+          weatherCondition = await getWeather(sale.location); // Use sale.location
         } else {
-          // For past sales, mark as "Historical data not available"
-          weatherCondition = await getWeather(today, location);
+          // For past sales, simulate or fetch historical data if available
+          weatherCondition = await getWeather(sale.location); // Replace with actual historical data fetch if possible
         }
-
+    
         return {
           ...sale,
           derived: {
@@ -32,7 +33,7 @@ export async function processSalesData(rawData, location) {
         };
       })
     );
-
+   
     // Track dishes sold per weather condition
     const dishesByWeather = {};
     salesWithWeather.forEach((sale) => {
@@ -99,33 +100,32 @@ function getMonth(date) {
   ][date.getMonth()];
 }
 
-const API_KEY = "1773fa0734e1ab6c35a49bcc67d52198";
+const API_KEY = '1773fa0734e1ab6c35a49bcc67d52198';
 
 export async function getLocation(location) {
-  const city = location.city;
-  const state = location.state;
+  const city = location.city
+  const state = location.state
   const url = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${state},US&limit=1&appid=${API_KEY}`;
   try {
     const response = await fetch(url);
     const data = await response.json();
     if (data && data.length > 0) {
       return {
-        latitude: data[0].lat,
-        longitude: data[0].lon,
-      };
+      latitude : data[0].lat,
+      longitude : data[0].lon
+    };
     }
     return null;
   } catch (error) {
-    console.error("Error fetching location:", error);
-    return null;
+    console.error('Error fetching location:', error);
+    return null;  
   }
 }
 
-const WEATHER_KEY = "d73de1b5e4944cd295933005250303";
+const WEATHER_KEY = 'd73de1b5e4944cd295933005250303';
 
-export async function getWeather(date, location) {
-  const url =
-    "https://api.weatherapi.com/v1/current.json?key=d73de1b5e4944cd295933005250303&q=${location.city}&aqi=no";
+export async function getWeather(location) {
+  const url = `https://api.weatherapi.com/v1/current.json?key=${WEATHER_KEY}&q=${location.city}&aqi=no`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -134,7 +134,7 @@ export async function getWeather(date, location) {
     const data = await response.json();
     return getWeatherDescription(data.current.condition.code);
   } catch (error) {
-    console.error("Error fetching weather:", error);
+    console.error('Error fetching weather:', error);
     return "Failed to fetch weather data";
   }
 }
@@ -188,13 +188,7 @@ export function getWeatherDescription(condition) {
     1273: "Patchy light rain with thunder",
     1276: "Moderate or heavy rain with thunder",
     1279: "Patchy light snow with thunder",
-    1282: "Moderate or heavy snow with thunder",
+    1282: "Moderate or heavy snow with thunder"
   };
   return weatherCodes[condition] || "Unknown";
-}
-
-// Simulated weather based on date (can be replaced with real API)
-function simulateWeather(date) {
-  const weatherOptions = ["Sunny", "Cloudy", "Rainy", "Stormy", "Windy"];
-  return weatherOptions[date.getDay() % weatherOptions.length]; // Cycles through options
 }

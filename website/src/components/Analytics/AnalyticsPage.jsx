@@ -10,6 +10,7 @@ import SalesByTimeOfDayChart from "./Charts/SalesByTimeOfDayChart";
 import SalesByDayChart from "./Charts/SalesByDayChart";
 import SeasonalPerformanceChart from "./Charts/SeasonalPerformanceChart";
 import AiAssistantBox from "../AiAssistantBox"; // Adjust path as needed based on your file structure
+import WeatherPerformanceChart from "./WeatherPerformanceChart";
 
 // Function to prepare data for weather chart
 export function prepareWeatherSalesData(processedData) {
@@ -54,6 +55,7 @@ const AnalyticsPage = () => {
     timeOfDay: true,
     dayOfWeek: true,
     seasonal: false,
+    weather: false,
   });
 
   // Toggle chart visibility
@@ -71,7 +73,7 @@ const AnalyticsPage = () => {
 
   useEffect(() => {
     try {
-      const location = { city: "New York", state: "NY" }; // Example location
+      const location = { city: "San Francisco", state: "CA" }; // Example location
       processSalesData(salesData, location)
         .then((enrichedData) => {
           if (Array.isArray(enrichedData)) {
@@ -214,6 +216,7 @@ const AnalyticsPage = () => {
     { id: "timeOfDay", label: "Time of Day Analysis" },
     { id: "dayOfWeek", label: "Day of Week Analysis" },
     { id: "seasonal", label: "Seasonal Performance" },
+    { id: "weatherPerformance", label: "Weather Performance" },
   ];
 
   // Simple guidance component
@@ -317,24 +320,24 @@ const AnalyticsPage = () => {
             Select which charts you want to see:
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {chartOptions.map((option) => (
-              <div key={option.id} className="flex items-center">
-                <input
-                  type="checkbox"
-                  id={option.id}
-                  checked={visibleCharts[option.id]}
-                  onChange={() => toggleChart(option.id)}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <label
-                  htmlFor={option.id}
-                  className="ml-2 text-sm text-gray-700"
-                >
-                  {option.label}
-                </label>
-              </div>
-            ))}
-          </div>
+  {chartOptions.map((option) => (
+    <div key={option.id} className="flex items-center">
+      <input
+        type="checkbox"
+        id={option.id}
+        checked={visibleCharts[option.id]}
+        onChange={() => toggleChart(option.id)}
+        className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+      />
+      <label
+        htmlFor={option.id}
+        className="ml-2 text-sm text-gray-700"
+      >
+        {option.label}
+      </label>
+    </div>
+  ))}
+</div>
         </div>
 
         {/* Charts - Only show if toggled on */}
@@ -486,6 +489,28 @@ const AnalyticsPage = () => {
             <SalesByDayChart data={processedData} />
           </ChartCard>
         )}
+{visibleCharts.weatherPerformance && (
+  <ChartCard
+    title="Weather Performance"
+    guidance={
+      <>
+        <ul className="list-disc pl-4 space-y-1">
+          <li>
+            This chart shows how different dishes perform under various weather conditions.
+          </li>
+          <li>
+            Look for dishes that consistently perform well across different weather conditions.
+          </li>
+          <li>
+            Consider adjusting menu offerings or promotions based on weather forecasts.
+          </li>
+        </ul>
+      </>
+    }
+  >
+    <WeatherPerformanceChart data={weatherSalesData} />
+  </ChartCard>
+)}
 
         {visibleCharts.seasonal && (
           <ChartCard
