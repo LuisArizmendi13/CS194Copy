@@ -10,8 +10,8 @@ import { getCategories, getFilteredDishes } from "../utils/menuHelpers";
 
 const MenusPage = () => {
   const { user, session } = useAuth();
-  const { menus, liveMenu, loading: menusLoading, deleteMenu, setMenuAsLive, addDishToMenu} = useMenus(session);
-  const { dishes, loading: dishesLoading, addDish, reload: reloadDishes } = useDishes(user, session);
+  const { menus, liveMenu, loading: menusLoading, deleteMenu, setMenuAsLive, addDishToMenu } = useMenus(session);
+  const { dishes, handleModifyDish, handleDeleteDish, loading: dishesLoading, addDish, reload: reloadDishes } = useDishes(user, session);
   const [activeTab, setActiveTab] = useState("live");  // ✅ UI-related state stays
   const [showDishPopup, setShowDishPopup] = useState(false);  // ✅ UI-related state stays
   const [selectedCategory, setSelectedCategory] = useState("all");  // ✅ UI-related state stays
@@ -24,28 +24,28 @@ const MenusPage = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const tabParam = queryParams.get("tab");
-  
+
     if (tabParam && ["live", "menus", "dishes"].includes(tabParam) && tabParam !== activeTab) {
       setActiveTab(tabParam);
     }
-  }, [location.search, activeTab]);  
+  }, [location.search, activeTab]);
 
 
   if (menusLoading || dishesLoading) {
     return <div className="flex justify-center items-center min-h-screen bg-gray-100">Loading...</div>;
   }
-  
+
   const handleEditMenu = (menuID) => {
     // Navigate to the edit page for this specific menu
     console.log("Navigating to edit menu with ID:", menuID); // Debugging step
     navigate(`/menus/${menuID}`);
   };
 
-const handleDeleteMenu = (menuID) => {
-  if (window.confirm("Are you sure you want to delete this menu? This action cannot be undone.")) {
-    deleteMenu(menuID);
-  }
-};
+  const handleDeleteMenu = (menuID) => {
+    if (window.confirm("Are you sure you want to delete this menu? This action cannot be undone.")) {
+      deleteMenu(menuID);
+    }
+  };
 
   if (!user) {
     return (
@@ -94,31 +94,28 @@ const handleDeleteMenu = (menuID) => {
         <div className="bg-white rounded-md shadow-sm mb-4">
           <div className="flex border-b">
             <button
-              className={`px-4 py-2 text-base font-medium ${
-                activeTab === "live"
+              className={`px-4 py-2 text-base font-medium ${activeTab === "live"
                   ? "text-green-600 border-b-2 border-green-600"
                   : "text-gray-500 hover:text-gray-700"
-              }`}
+                }`}
               onClick={() => setActiveTab("live")}
             >
               Live Menu
             </button>
             <button
-              className={`px-4 py-2 text-base font-medium ${
-                activeTab === "menus"
+              className={`px-4 py-2 text-base font-medium ${activeTab === "menus"
                   ? "text-green-600 border-b-2 border-green-600"
                   : "text-gray-500 hover:text-gray-700"
-              }`}
+                }`}
               onClick={() => setActiveTab("menus")}
             >
               My Menus
             </button>
             <button
-              className={`px-4 py-2 text-base font-medium ${
-                activeTab === "dishes"
+              className={`px-4 py-2 text-base font-medium ${activeTab === "dishes"
                   ? "text-green-600 border-b-2 border-green-600"
                   : "text-gray-500 hover:text-gray-700"
-              }`}
+                }`}
               onClick={() => setActiveTab("dishes")}
             >
               Dish Library
@@ -231,11 +228,10 @@ const handleDeleteMenu = (menuID) => {
                     {getCategories().map((category) => (
                       <button
                         key={category}
-                        className={`px-4 py-1.5 rounded-full mr-2 whitespace-nowrap text-sm ${
-                          selectedCategory === category
+                        className={`px-4 py-1.5 rounded-full mr-2 whitespace-nowrap text-sm ${selectedCategory === category
                             ? "bg-green-600 text-white"
                             : "bg-white text-gray-800 hover:bg-gray-100"
-                        } shadow-sm transition`}
+                          } shadow-sm transition`}
                         onClick={() => setSelectedCategory(category)}
                       >
                         {category === "all" ? "All Items" : category}
@@ -245,7 +241,7 @@ const handleDeleteMenu = (menuID) => {
                 )}
 
                 {/* Menu Items */}
-                {getFilteredDishes(liveMenu, selectedCategory).length === 0 ?  (
+                {getFilteredDishes(liveMenu, selectedCategory).length === 0 ? (
                   <div className="bg-white p-4 rounded-md shadow-sm text-center">
                     <p className="text-gray-600 mb-4">
                       No dishes have been added to this menu yet.
@@ -469,7 +465,7 @@ const handleDeleteMenu = (menuID) => {
                 + New Dish
               </button>
             </div>
-
+            {/* DISH MAP LOGIC*/}
             {dishes.length === 0 ? (
               <div className="bg-white p-4 rounded-md shadow-sm text-center">
                 <p className="text-gray-600 mb-4">
@@ -485,10 +481,7 @@ const handleDeleteMenu = (menuID) => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {dishes.map((dish) => (
-                  <div
-                    key={dish.dishId}
-                    className="bg-white rounded-md shadow-sm overflow-hidden"
-                  >
+                  <div key={dish.dishId} className="bg-white rounded-md shadow-sm overflow-hidden">
                     <div className="p-4">
                       <div className="flex justify-between items-start mb-2">
                         <div>
@@ -520,10 +513,28 @@ const handleDeleteMenu = (menuID) => {
                           </p>
                         </div>
                       )}
+
+                      {/* ✅ Added Edit and Delete Buttons */}
+                      <div className="flex justify-between mt-3">
+                        <button
+                          className="px-3 py-1 text-xs border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition"
+                          onClick={() => handleModifyDish(dish)}
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition"
+                          //onClick={() => handleDeleteDish(dish.dishId)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
+
             )}
           </div>
         )}

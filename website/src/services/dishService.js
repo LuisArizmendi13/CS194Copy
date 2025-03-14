@@ -12,11 +12,38 @@ export const fetchDishes = async (restaurantId) => {
   return data.Items;
 };
 
-// Delete a dish by dishId.
+// Delete a dish by dishId with error handling.
 export const deleteDish = async (dishId) => {
-  await dynamoDb.delete({ TableName: TABLE_NAME, Key: { dishId } }).promise();
+  try {
+    const params = {
+      TableName: TABLE_NAME,
+      Key: { dishId },
+    };
+
+    await dynamoDb.delete(params).promise();
+  } catch (error) {
+    console.error("Error deleting dish:", error);
+    throw new Error("Failed to delete dish");
+  }
 };
 
+// Modify an existing dish by dishId.
+export const modifyDish = async (dish) => {
+  const params = {
+    TableName: TABLE_NAME,
+    Key: { dishId: dish.dishId },
+    UpdateExpression: "SET name = :name, price = :price, ingredients = :ingredients",
+    ExpressionAttributeValues: {
+      ":name": dish.name,
+      ":price": dish.price,
+      ":ingredients": dish.ingredients || [],
+    },
+  };
+
+  await dynamoDb.update(params).promise();
+};
+
+// Add a new dish to the database.
 export const addDishToDatabase = async (dish, restaurantId) => {
   if (!restaurantId) {
     throw new Error("❌ Cannot save dish: No restaurantId found!");
