@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { dynamoDb, MENUS_TABLE_NAME, getUserRestaurantId } from "../aws-config";
+import { getUserRestaurantId } from "../aws-config";
 import { useAuth } from "../context/AuthContext";
 import FormInput from "../components/FormInput";
 import DishSelectionPopup from "../components/Menus/DishSelectionPopup";
+import { createMenu } from "../services/menuService";
 
 const MenuCreationPage = () => {
   const navigate = useNavigate();
@@ -26,9 +27,7 @@ const MenuCreationPage = () => {
 
     const restaurantId = getUserRestaurantId(session);
     if (!restaurantId) {
-      setErrorMessage(
-        "Error: No restaurant ID found. Please try logging in again."
-      );
+      setErrorMessage("Error: No restaurant ID found. Please try logging in again.");
       return;
     }
 
@@ -37,25 +36,19 @@ const MenuCreationPage = () => {
       name: menuName.trim(),
       description: menuDescription.trim(),
       restaurantId,
-      dishes: selectedDishes, // Include selected dishes
+      dishes: selectedDishes,
     };
+    
 
     try {
       setIsSaving(true);
-      await dynamoDb
-        .put({
-          TableName: MENUS_TABLE_NAME,
-          Item: newMenu,
-        })
-        .promise();
-
-      console.log("✅ Menu successfully saved:", newMenu);
+      await createMenu(newMenu);
+      console.log("✅ Menu successfully saved: ", newMenu);
+      console.log("Navigating to /mymenus");
       navigate("/menus");
     } catch (error) {
       console.error("❌ Error saving menu:", error);
-      setErrorMessage(
-        "An error occurred while saving the menu. Please try again."
-      );
+      setErrorMessage("An error occurred while saving the menu. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -66,13 +59,8 @@ const MenuCreationPage = () => {
       <h2 className="text-2xl font-bold mb-4">Create a New Menu</h2>
       <p className="text-gray-600">Fill in the details to create your menu.</p>
 
-      <form
-        onSubmit={handleSubmit}
-        className="mt-6 bg-white shadow-md p-4 rounded"
-      >
-        {errorMessage && (
-          <p className="text-red-600 font-semibold mb-2">{errorMessage}</p>
-        )}
+      <form onSubmit={handleSubmit} className="mt-6 bg-white shadow-md p-4 rounded">
+        {errorMessage && <p className="text-red-600 font-semibold mb-2">{errorMessage}</p>}
 
         <FormInput
           label="Menu Name"
@@ -117,17 +105,16 @@ const MenuCreationPage = () => {
         <div className="flex justify-between items-center mt-6">
           <button
             type="button"
-            onClick={() => navigate("/menus")}
+            onClick={() => navigate("/mymenus")}
             className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
           >
             ← Cancel
           </button>
           <div className="flex gap-4">
-            {/* Select Dishes Button (Now Prevents Form Submission) */}
             <button
               type="button"
               onClick={(e) => {
-                e.preventDefault(); // ✅ Prevents form submission bug
+                e.preventDefault();
                 console.log("Opening Dish Selection Popup");
                 setShowPopup(true);
               }}
@@ -135,8 +122,6 @@ const MenuCreationPage = () => {
             >
               Select Dishes
             </button>
-
-            {/* Save Menu Button */}
             <button
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"

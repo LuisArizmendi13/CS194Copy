@@ -1,218 +1,56 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import {
-  dynamoDb,
-  MENUS_TABLE_NAME,
-  TABLE_NAME,
-  getUserRestaurantId,
-} from "../aws-config";
 import { useNavigate, useLocation } from "react-router-dom";
+import useMenus from "../hooks/useMenus";
+import useDishes from "../hooks/useDishes";
 import AddDishPopup from "../components/AddDishPopup";
+import { getCategories, getFilteredDishes } from "../utils/menuHelpers";
+
+
 
 const MenusPage = () => {
   const { user, session } = useAuth();
-  const [activeTab, setActiveTab] = useState("live");
-  const [menus, setMenus] = useState([]);
-  const [dishes, setDishes] = useState([]);
-  const [liveMenu, setLiveMenu] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [showDishPopup, setShowDishPopup] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [showHelpText, setShowHelpText] = useState(true);
+  const { menus, liveMenu, loading: menusLoading, deleteMenu, setMenuAsLive, addDishToMenu } = useMenus(session);
+  const { dishes, handleModifyDish, handleDeleteDish, loading: dishesLoading, addDish, reload: reloadDishes } = useDishes(user, session);
+  const [activeTab, setActiveTab] = useState("live");  // ✅ UI-related state stays
+  const [showDishPopup, setShowDishPopup] = useState(false);  // ✅ UI-related state stays
+  const [selectedCategory, setSelectedCategory] = useState("all");  // ✅ UI-related state stays
+  const [showHelpText, setShowHelpText] = useState(true);  // ✅ UI-related state stays
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Check for URL parameters
-  const queryParams = new URLSearchParams(location.search);
-  const tabParam = queryParams.get("tab");
-
-  // Get unique categories from menu items
-  const getCategories = () => {
-    if (!liveMenu || !liveMenu.dishes) return [];
-
-    const categoriesSet = new Set(
-      liveMenu.dishes.map((dish) => dish.category || "Uncategorized")
-    );
-    return ["all", ...Array.from(categoriesSet)];
-  };
-
-  // Filter dishes by selected category
-  const getFilteredDishes = () => {
-    if (!liveMenu || !liveMenu.dishes) return [];
-    if (selectedCategory === "all") return liveMenu.dishes;
-    return liveMenu.dishes.filter((dish) => dish.category === selectedCategory);
-  };
+  const categories = getCategories(liveMenu);
+  const filteredDishes = getFilteredDishes(liveMenu, selectedCategory);
 
   useEffect(() => {
-    // Set active tab based on URL parameter if present
-    if (tabParam) {
-      if (
-        tabParam === "live" ||
-        tabParam === "menus" ||
-        tabParam === "dishes"
-      ) {
-        setActiveTab(tabParam);
-      }
+    const queryParams = new URLSearchParams(location.search);
+    const tabParam = queryParams.get("tab");
+
+    if (tabParam && ["live", "menus", "dishes"].includes(tabParam) && tabParam !== activeTab) {
+      setActiveTab(tabParam);
     }
-  }, [tabParam]);
+  }, [location.search, activeTab]);
 
-  useEffect(() => {
-    if (!user || !session) return;
 
-    const fetchData = async () => {
-      try {
-        const restaurantId = getUserRestaurantId(session);
-        if (!restaurantId) {
-          console.warn("❌ No restaurantId found!");
-          setLoading(false);
-          return;
-        }
-
-        // Fetch menus
-        const menuParams = {
-          TableName: MENUS_TABLE_NAME,
-          FilterExpression: "restaurantId = :rId",
-          ExpressionAttributeValues: { ":rId": restaurantId },
-        };
-
-        const menuData = await dynamoDb.scan(menuParams).promise();
-        const menusArray = menuData.Items || [];
-        setMenus(menusArray);
-
-        // Fetch dishes
-        const dishParams = {
-          TableName: TABLE_NAME,
-          FilterExpression: "restaurantId = :rId",
-          ExpressionAttributeValues: { ":rId": restaurantId },
-        };
-
-        const dishData = await dynamoDb.scan(dishParams).promise();
-        setDishes(dishData.Items || []);
-
-        // Find the live menu if any
-        const liveMenuID = sessionStorage.getItem("liveMenuID");
-        const currentLiveMenu =
-          menusArray.find((menu) => menu.menuID === liveMenuID) ||
-          menusArray.find((menu) => menu.isLive);
-        setLiveMenu(currentLiveMenu);
-      } catch (error) {
-        console.error("❌ Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [user, session]);
-
-  const addDish = async (dish) => {
-    try {
-      const restaurantId = getUserRestaurantId(session);
-      if (!restaurantId) {
-        console.error("❌ Cannot save dish: No restaurantId found!");
-        return;
-      }
-
-      const dishWithRestaurant = { ...dish, restaurantId };
-
-      // Save to dishes table
-      await dynamoDb
-        .put({
-          TableName: TABLE_NAME,
-          Item: dishWithRestaurant,
-        })
-        .promise();
-
-      // Also add to current live menu if one exists
-      if (liveMenu) {
-        const updatedMenu = {
-          ...liveMenu,
-          dishes: [...(liveMenu.dishes || []), dishWithRestaurant],
-        };
-
-        await dynamoDb
-          .put({
-            TableName: MENUS_TABLE_NAME,
-            Item: updatedMenu,
-          })
-          .promise();
-
-        setLiveMenu(updatedMenu);
-
-        // Update menus array
-        setMenus(
-          menus.map((menu) =>
-            menu.menuID === updatedMenu.menuID ? updatedMenu : menu
-          )
-        );
-      }
-
-      setDishes([...dishes, dishWithRestaurant]);
-    } catch (error) {
-      console.error("Error saving dish:", error);
-    }
-  };
-
-  const setMenuAsLive = async (menuId) => {
-    try {
-      // First, unset the current live menu
-      if (liveMenu) {
-        const currentLiveMenuUpdated = { ...liveMenu, isLive: false };
-        await dynamoDb
-          .put({
-            TableName: MENUS_TABLE_NAME,
-            Item: currentLiveMenuUpdated,
-          })
-          .promise();
-      }
-
-      // Set the new menu as live
-      const newLiveMenu = menus.find((menu) => menu.menuID === menuId);
-      if (newLiveMenu) {
-        const updatedMenu = { ...newLiveMenu, isLive: true };
-        await dynamoDb
-          .put({
-            TableName: MENUS_TABLE_NAME,
-            Item: updatedMenu,
-          })
-          .promise();
-
-        // Update state
-        setLiveMenu(updatedMenu);
-        setMenus(
-          menus.map((menu) =>
-            menu.menuID === menuId ? updatedMenu : { ...menu, isLive: false }
-          )
-        );
-
-        // Store live menu ID in session storage
-        sessionStorage.setItem("liveMenuID", menuId);
-
-        // Trigger event to update other components
-        window.dispatchEvent(new Event("liveMenuUpdated"));
-      }
-    } catch (error) {
-      console.error("Error setting menu as live:", error);
-    }
-  };
+  if (menusLoading || dishesLoading) {
+    return <div className="flex justify-center items-center min-h-screen bg-gray-100">Loading...</div>;
+  }
 
   const handleEditMenu = (menuID) => {
     // Navigate to the edit page for this specific menu
+    console.log("Navigating to edit menu with ID:", menuID); // Debugging step
     navigate(`/menus/${menuID}`);
+  };
+
+  const handleDeleteMenu = (menuID) => {
+    if (window.confirm("Are you sure you want to delete this menu? This action cannot be undone.")) {
+      deleteMenu(menuID);
+    }
   };
 
   if (!user) {
     return (
       <div className="text-center p-10 text-xl font-semibold text-gray-700">
         Redirecting to Sign In...
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
       </div>
     );
   }
@@ -256,31 +94,28 @@ const MenusPage = () => {
         <div className="bg-white rounded-md shadow-sm mb-4">
           <div className="flex border-b">
             <button
-              className={`px-4 py-2 text-base font-medium ${
-                activeTab === "live"
+              className={`px-4 py-2 text-base font-medium ${activeTab === "live"
                   ? "text-green-600 border-b-2 border-green-600"
                   : "text-gray-500 hover:text-gray-700"
-              }`}
+                }`}
               onClick={() => setActiveTab("live")}
             >
               Live Menu
             </button>
             <button
-              className={`px-4 py-2 text-base font-medium ${
-                activeTab === "menus"
+              className={`px-4 py-2 text-base font-medium ${activeTab === "menus"
                   ? "text-green-600 border-b-2 border-green-600"
                   : "text-gray-500 hover:text-gray-700"
-              }`}
+                }`}
               onClick={() => setActiveTab("menus")}
             >
               My Menus
             </button>
             <button
-              className={`px-4 py-2 text-base font-medium ${
-                activeTab === "dishes"
+              className={`px-4 py-2 text-base font-medium ${activeTab === "dishes"
                   ? "text-green-600 border-b-2 border-green-600"
                   : "text-gray-500 hover:text-gray-700"
-              }`}
+                }`}
               onClick={() => setActiveTab("dishes")}
             >
               Dish Library
@@ -393,11 +228,10 @@ const MenusPage = () => {
                     {getCategories().map((category) => (
                       <button
                         key={category}
-                        className={`px-4 py-1.5 rounded-full mr-2 whitespace-nowrap text-sm ${
-                          selectedCategory === category
+                        className={`px-4 py-1.5 rounded-full mr-2 whitespace-nowrap text-sm ${selectedCategory === category
                             ? "bg-green-600 text-white"
                             : "bg-white text-gray-800 hover:bg-gray-100"
-                        } shadow-sm transition`}
+                          } shadow-sm transition`}
                         onClick={() => setSelectedCategory(category)}
                       >
                         {category === "all" ? "All Items" : category}
@@ -407,7 +241,7 @@ const MenusPage = () => {
                 )}
 
                 {/* Menu Items */}
-                {getFilteredDishes().length === 0 ? (
+                {getFilteredDishes(liveMenu, selectedCategory).length === 0 ? (
                   <div className="bg-white p-4 rounded-md shadow-sm text-center">
                     <p className="text-gray-600 mb-4">
                       No dishes have been added to this menu yet.
@@ -421,7 +255,7 @@ const MenusPage = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {getFilteredDishes().map((dish) => (
+                    {getFilteredDishes(liveMenu, selectedCategory).map((dish) => (
                       <div
                         key={dish.dishId}
                         className="bg-white rounded-md shadow-sm overflow-hidden hover:shadow-md transition"
@@ -494,7 +328,7 @@ const MenusPage = () => {
                   + New Menu
                 </button>
                 <button className="px-3 py-1.5 text-sm bg-rose-500 text-white rounded hover:bg-rose-600 transition">
-                  AI Generate
+                  AI Generate   {/* No Functionality?*/}
                 </button>
               </div>
             </div>
@@ -572,21 +406,30 @@ const MenusPage = () => {
                         ).toLocaleDateString()}
                       </p>
 
-                      <div className="flex justify-between">
+                      <div className="flex justify-between ">
                         <button
                           className="px-3 py-1 text-xs border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition"
                           onClick={() => handleEditMenu(menu.menuID)}
                         >
                           Edit
                         </button>
-                        {!menu.isLive && (
+                        <div className="flex items-center space-x-2">
+                          {!menu.isLive && (
+                            <button
+                              className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
+                              onClick={() => setMenuAsLive(menu.menuID)}
+                            >
+                              Set Live
+                            </button>
+                          )}
+
                           <button
-                            className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
-                            onClick={() => setMenuAsLive(menu.menuID)}
+                            className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition"
+                            onClick={() => handleDeleteMenu(menu.menuID)}
                           >
-                            Set Live
+                            Delete
                           </button>
-                        )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -622,7 +465,7 @@ const MenusPage = () => {
                 + New Dish
               </button>
             </div>
-
+            {/* DISH MAP LOGIC*/}
             {dishes.length === 0 ? (
               <div className="bg-white p-4 rounded-md shadow-sm text-center">
                 <p className="text-gray-600 mb-4">
@@ -638,10 +481,7 @@ const MenusPage = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {dishes.map((dish) => (
-                  <div
-                    key={dish.dishId}
-                    className="bg-white rounded-md shadow-sm overflow-hidden"
-                  >
+                  <div key={dish.dishId} className="bg-white rounded-md shadow-sm overflow-hidden">
                     <div className="p-4">
                       <div className="flex justify-between items-start mb-2">
                         <div>
@@ -659,91 +499,42 @@ const MenusPage = () => {
                         </div>
                       </div>
 
-                      <p className="text-gray-600 text-sm mb-2">
-                        {dish.description || "No description available."}
-                      </p>
+                      {dish.description && (
+                        <p className="text-gray-600 text-sm mt-2">
+                          {dish.description}
+                        </p>
+                      )}
 
                       {dish.ingredients?.length > 0 && (
-                        <div className="mt-2 mb-3">
-                          <h4 className="text-xs font-medium text-gray-700 mb-1">
-                            Ingredients:
-                          </h4>
-                          <div className="flex flex-wrap gap-1">
-                            {dish.ingredients?.map((ing, idx) => (
-                              <span
-                                key={idx}
-                                className="inline-block bg-gray-100 px-2 py-0.5 rounded text-xs text-gray-700"
-                              >
-                                {ing}
-                              </span>
-                            ))}
-                          </div>
+                        <div className="mt-2">
+                          <p className="text-xs text-gray-500">
+                            {dish.ingredients.slice(0, 3).join(", ")}
+                            {dish.ingredients.length > 3 ? "..." : ""}
+                          </p>
                         </div>
                       )}
 
-                      <div className="flex justify-between mt-2">
-                        <button className="px-3 py-1 text-xs border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition">
+                      {/* ✅ Added Edit and Delete Buttons */}
+                      <div className="flex justify-between mt-3">
+                        <button
+                          className="px-3 py-1 text-xs border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition"
+                          onClick={() => handleModifyDish(dish)}
+                        >
                           Edit
                         </button>
-                        {liveMenu && (
-                          <button
-                            className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
-                            onClick={() => {
-                              // Add to live menu functionality
-                              if (!liveMenu.dishes) {
-                                liveMenu.dishes = [];
-                              }
 
-                              // Check if dish is already in the menu
-                              const isDishInMenu = liveMenu.dishes.some(
-                                (d) => d.dishId === dish.dishId
-                              );
-
-                              if (!isDishInMenu) {
-                                const updatedMenu = {
-                                  ...liveMenu,
-                                  dishes: [...liveMenu.dishes, dish],
-                                };
-
-                                dynamoDb
-                                  .put({
-                                    TableName: MENUS_TABLE_NAME,
-                                    Item: updatedMenu,
-                                  })
-                                  .promise()
-                                  .then(() => {
-                                    setLiveMenu(updatedMenu);
-                                    setMenus(
-                                      menus.map((m) =>
-                                        m.menuID === updatedMenu.menuID
-                                          ? updatedMenu
-                                          : m
-                                      )
-                                    );
-                                    alert(
-                                      `${dish.name} added to ${liveMenu.name}`
-                                    );
-                                  })
-                                  .catch((err) => {
-                                    console.error(
-                                      "Error adding dish to menu:",
-                                      err
-                                    );
-                                    alert("Error adding dish to menu");
-                                  });
-                              } else {
-                                alert(`${dish.name} is already in the menu`);
-                              }
-                            }}
-                          >
-                            Add to Menu
-                          </button>
-                        )}
+                        <button
+                          className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition"
+                          //onClick={() => handleDeleteDish(dish.dishId)}
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
+
             )}
           </div>
         )}

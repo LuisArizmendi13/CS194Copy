@@ -14,7 +14,7 @@ import ArchivePage from "./Pages/ArchivePage";
 import SignUp from "./Pages/SignUp";
 import SignIn from "./Pages/SignIn";
 import OrdersPage from "./Pages/OrdersPage.jsx";
-import AnalyticsPage from "./components/Analytics/AnalyticsPage";
+import AnalyticsPage from "./Pages/AnalyticsPage";
 import ConfirmSignUp from "./Pages/ConfirmSignUp";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 

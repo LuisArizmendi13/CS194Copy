@@ -1,16 +1,16 @@
 // analyticspage.jsx
 import React, { useState, useEffect } from "react";
-import salesData from "./sales_data.json";
-import { processSalesData } from "./processSalesData";
+import salesData from "../components/Analytics/sales_data.json";
+import { processSalesData } from "../components/Analytics/processSalesData";
 
-import BestSellingChart from "./Charts/BestSellingChart";
-import RevenueProfitChart from "./Charts/RevenueProfitChart";
-import SalesTrendChart from "./Charts/SalesTrendChart";
-import SalesByTimeOfDayChart from "./Charts/SalesByTimeOfDayChart";
-import SalesByDayChart from "./Charts/SalesByDayChart";
-import SeasonalPerformanceChart from "./Charts/SeasonalPerformanceChart";
-import AiAssistantBox from "../AiAssistantBox"; // Adjust path as needed based on your file structure
-import WeatherPerformanceChart from "./WeatherPerformanceChart";
+import BestSellingChart from "../components/Analytics/Charts/BestSellingChart";
+import RevenueProfitChart from "../components/Analytics/Charts/RevenueProfitChart";
+import SalesTrendChart from "../components/Analytics/Charts/SalesTrendChart";
+import SalesByTimeOfDayChart from "../components/Analytics/Charts/SalesByTimeOfDayChart";
+import SalesByDayChart from "../components/Analytics/Charts/SalesByDayChart";
+import SeasonalPerformanceChart from "../components/Analytics/Charts/SeasonalPerformanceChart";
+import AiAssistantBox from "../components/AiAssistantBox"; // Adjust path as needed based on your file structure
+import WeatherPerformanceChart from "../components/Analytics/WeatherPerformanceChart";
 
 // Function to prepare data for weather chart
 export function prepareWeatherSalesData(processedData) {

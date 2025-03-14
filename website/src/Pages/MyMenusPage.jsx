@@ -1,52 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { dynamoDb, MENUS_TABLE_NAME, getUserRestaurantId } from "../aws-config";
+import useMenus from "../hooks/useMenus";
+import MenuList from "../components/Menus/MenuList";
 import NewMenuButton from "../components/Menus/NewMenuButton";
 import UploadMenuPopup from "../components/UploadMenuPopup";
-import MenuList from "../components/Menus/MenuList";
 
 const MyMenusPage = () => {
   const { session } = useAuth();
-  const [menus, setMenus] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { menus, loading, error, reload } = useMenus(session);
   const [showUploadPopup, setShowUploadPopup] = useState(false);
 
+  // Deletion handler: you can either reload or update state locally.
+  const handleDeleteMenu = (deletedMenuID) => {
+    reload();
+  };
+
+  // Listen for live menu updates and refresh menus immediately.
   useEffect(() => {
-    if (!session) return;
-
-    const fetchMenus = async () => {
-      try {
-        const restaurantId = getUserRestaurantId(session);
-        if (!restaurantId) {
-          console.warn("❌ No restaurantId found!");
-          setLoading(false);
-          return;
-        }
-
-        const params = {
-          TableName: MENUS_TABLE_NAME,
-          FilterExpression: "restaurantId = :rId",
-          ExpressionAttributeValues: { ":rId": restaurantId },
-        };
-
-        const data = await dynamoDb.scan(params).promise();
-        if (data.Items) {
-          console.log("✅ Fetched Menus:", data.Items);
-          setMenus(data.Items);
-        }
-      } catch (error) {
-        console.error("❌ Error fetching menus:", error);
-      } finally {
-        setLoading(false);
-      }
+    const handleLiveMenuUpdated = () => {
+      reload();
     };
-
-    fetchMenus();
-  }, [session]);
+    window.addEventListener("liveMenuUpdated", handleLiveMenuUpdated);
+    return () => window.removeEventListener("liveMenuUpdated", handleLiveMenuUpdated);
+  }, [reload]);
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      {/* ✅ Buttons Section - Side by Side with a Divider */}
       <div className="mb-6 flex items-center justify-end space-x-4 border-b pb-4">
         <NewMenuButton />
         <div className="h-6 border-l border-gray-400"></div>{" "}
@@ -59,11 +38,12 @@ const MyMenusPage = () => {
         </button>
       </div>
 
-      {/* ✅ Show loading message */}
       {loading ? (
         <p className="text-gray-500 text-center">Loading menus...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
       ) : (
-        <MenuList menus={menus} />
+        <MenuList menus={menus} onDelete={handleDeleteMenu} />
       )}
 
       {/* ✅ Upload Popup (Shows when `showUploadPopup` is true) */}
