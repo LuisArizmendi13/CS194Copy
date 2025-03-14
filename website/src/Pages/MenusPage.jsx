@@ -41,7 +41,6 @@ const MenusPage = () => {
     navigate(`/menus/${menuID}`);
   };
 
-
 const handleDeleteMenu = (menuID) => {
   if (window.confirm("Are you sure you want to delete this menu? This action cannot be undone.")) {
     deleteMenu(menuID);

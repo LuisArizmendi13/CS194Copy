@@ -17,8 +17,14 @@ export const fetchMenus = async (restaurantId) => {
     FilterExpression: "restaurantId = :rId",
     ExpressionAttributeValues: { ":rId": restaurantId },
   };
+
   const data = await dynamoDb.scan(params).promise();
-  return data.Items;
+  const menus = data.Items;
+
+  // ✅ Find the live menu
+  const liveMenu = menus.find(menu => menu.isLive === true) || null;
+
+  return { menus, liveMenu }; // ✅ Return both menus and live menu
 };
 
 // Delete a menu by menuID.
@@ -28,7 +34,7 @@ export const deleteMenuFromDatabase = async (menuID) => {
 
 // Set a menu as live and unset any other live menus.
 export const setLiveMenu = async (menu, restaurantId) => {
-  // Update the selected menu to be live.
+  // ✅ Step 1: Set the new menu as live
   await dynamoDb.update({
     TableName: MENUS_TABLE_NAME,
     Key: { menuID: menu.menuID },
@@ -36,7 +42,7 @@ export const setLiveMenu = async (menu, restaurantId) => {
     ExpressionAttributeValues: { ":live": true },
   }).promise();
 
-  // Unset any other live menus.
+  // ✅ Step 2: Find all previously live menus and unset them
   const params = {
     TableName: MENUS_TABLE_NAME,
     FilterExpression: "restaurantId = :rId AND isLive = :live",
@@ -45,24 +51,22 @@ export const setLiveMenu = async (menu, restaurantId) => {
       ":live": true,
     },
   };
+  
   const data = await dynamoDb.scan(params).promise();
-  const updatePromises = [];
-  if (data.Items) {
-    data.Items.forEach((item) => {
-      if (item.menuID !== menu.menuID) {
-        updatePromises.push(
-          dynamoDb.update({
-            TableName: MENUS_TABLE_NAME,
-            Key: { menuID: item.menuID },
-            UpdateExpression: "SET isLive = :false",
-            ExpressionAttributeValues: { ":false": false },
-          }).promise()
-        );
-      }
-    });
+  
+  // ✅ Step 3: Update all previously live menus to isLive = false
+  for (const oldMenu of data.Items) {
+    if (oldMenu.menuID !== menu.menuID) {
+      await dynamoDb.update({
+        TableName: MENUS_TABLE_NAME,
+        Key: { menuID: oldMenu.menuID },
+        UpdateExpression: "SET isLive = :live",
+        ExpressionAttributeValues: { ":live": false },
+      }).promise();
+    }
   }
-  await Promise.all(updatePromises);
 };
+
 
 export const updateMenuInDatabase = async (menu) => {
   if (!menu || !menu.menuID) {

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import useMenus from "../hooks/useMenus"; // ✅ Import useMenus hook
+import AWS from "aws-sdk";
+import { MENUS_TABLE_NAME } from "../aws-config";
 import DishSelectionPopup from "../components/Menus/DishSelectionPopup";
+
+const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 const MenuPage = () => {
   const { menuID } = useParams();
   const navigate = useNavigate();
-  const { menus, updateMenu } = useMenus(); // ✅ Get updateMenu function from useMenus
   const [menu, setMenu] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,31 +16,43 @@ const MenuPage = () => {
   const [selectedDishes, setSelectedDishes] = useState([]);
 
   useEffect(() => {
-    if (loading) return; // ✅ Don't proceed until menus finish loading
-  
-    console.log("Menus state in MenuPage:", menus); // Debugging step
-    const fetchedMenu = menus.find((m) => m.menuID === menuID);
-    if (fetchedMenu) {
-      console.log("Found menu:", fetchedMenu); // ✅ Confirm menu retrieval
-      setMenu(fetchedMenu);
-      setSelectedDishes(fetchedMenu.dishes || []);
-      setLoading(false);
-    } else {
-      console.log("Menu not found for ID:", menuID); // ✅ Debugging step
-      setError("Menu not found.");
-      setLoading(false);
-    }
-  }, [menus, menuID, loading]); // ✅ Include `loading` in dependencies
+    const fetchMenu = async () => {
+      try {
+        const params = { TableName: MENUS_TABLE_NAME, Key: { menuID } };
+        const data = await dynamoDb.get(params).promise();
 
-  // ✅ Updated function to update dishes using useMenus.js
+        if (data.Item) {
+          console.log("✅ Fetched Menu:", data.Item);
+          setMenu(data.Item);
+          setSelectedDishes(data.Item.dishes || []);
+        } else {
+          console.warn("⚠️ Menu not found!");
+          setError("Menu not found.");
+        }
+      } catch (error) {
+        console.error("❌ Error fetching menu:", error);
+        setError("Failed to load menu. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMenu();
+  }, [menuID]);
+
   const handleUpdateDishes = async (updatedDishes) => {
     if (!menu) return;
-
+    
     const updatedMenu = { ...menu, dishes: updatedDishes };
-
+    
     try {
-      await updateMenu(updatedMenu); // ✅ Uses useMenus.js instead of direct DB update
-      setSelectedDishes(updatedDishes); // ✅ Updates UI immediately
+      await dynamoDb.put({
+        TableName: MENUS_TABLE_NAME,
+        Item: updatedMenu,
+      }).promise();
+
+      console.log("✅ Menu updated successfully:", updatedMenu);
+      setSelectedDishes(updatedDishes);
       setShowPopup(false);
     } catch (error) {
       console.error("❌ Error updating menu:", error);
@@ -55,7 +69,7 @@ const MenuPage = () => {
         ← Back to Menus
       </button>
 
-      <h2 className="text-2xl font-bold mb-4">{menu.name}</h2>
+      <h2 className="text-2xl font-bo ld mb-4">{menu.name}</h2>
       <p className="text-gray-600">{menu.description || "No description available."}</p>
 
       {/* Display Selected Dishes */}
@@ -92,7 +106,7 @@ const MenuPage = () => {
       {showPopup && (
         <DishSelectionPopup
           onClose={() => setShowPopup(false)}
-          onSelectDishes={handleUpdateDishes} // ✅ Calls updated function
+          onSelectDishes={handleUpdateDishes}
           selectedDishes={selectedDishes}
         />
       )}

@@ -16,10 +16,14 @@ const useMenus = (session) => {
           return;
         }
   
-        const menusData = await fetchMenus(restaurantId);
-        console.log("Fetched menus from DB:", menusData); // ✅ Debugging Step
-        setMenus(menusData);
-        setLoading(false); // ✅ Ensure loading stops
+        const { menus, liveMenu } = await fetchMenus(restaurantId); // ✅ Updated to get both
+  
+        console.log("Fetched menus from DB:", menus); // ✅ Debugging Step
+        console.log("Fetched live menu from DB:", liveMenu); // ✅ Debugging Step
+  
+        setMenus(menus);
+        setLiveMenuState(liveMenu); // ✅ Ensure UI updates correctly
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching menus:", error);
         setLoading(false); // ✅ Ensure loading stops
