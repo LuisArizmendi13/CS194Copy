@@ -7,6 +7,7 @@ import AddDishPopup from "../components/AddDishPopup";
 import { getCategories, getFilteredDishes } from "../utils/menuHelpers";
 
 
+
 const MenusPage = () => {
   const { user, session } = useAuth();
   const { menus, liveMenu, loading: menusLoading, deleteMenu, setMenuAsLive, addDishToMenu} = useMenus(session);
@@ -27,19 +28,25 @@ const MenusPage = () => {
     if (tabParam && ["live", "menus", "dishes"].includes(tabParam) && tabParam !== activeTab) {
       setActiveTab(tabParam);
     }
-  }, [location.search]);  
+  }, [location.search, activeTab]);  
 
 
   if (menusLoading || dishesLoading) {
     return <div className="flex justify-center items-center min-h-screen bg-gray-100">Loading...</div>;
   }
-
-
-
+  
   const handleEditMenu = (menuID) => {
     // Navigate to the edit page for this specific menu
+    console.log("Navigating to edit menu with ID:", menuID); // Debugging step
     navigate(`/menus/${menuID}`);
   };
+
+
+const handleDeleteMenu = (menuID) => {
+  if (window.confirm("Are you sure you want to delete this menu? This action cannot be undone.")) {
+    deleteMenu(menuID);
+  }
+};
 
   if (!user) {
     return (
@@ -326,7 +333,7 @@ const MenusPage = () => {
                   + New Menu
                 </button>
                 <button className="px-3 py-1.5 text-sm bg-rose-500 text-white rounded hover:bg-rose-600 transition">
-                  AI Generate
+                  AI Generate   {/* No Functionality?*/}
                 </button>
               </div>
             </div>
@@ -404,21 +411,30 @@ const MenusPage = () => {
                         ).toLocaleDateString()}
                       </p>
 
-                      <div className="flex justify-between">
+                      <div className="flex justify-between ">
                         <button
                           className="px-3 py-1 text-xs border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition"
                           onClick={() => handleEditMenu(menu.menuID)}
                         >
                           Edit
                         </button>
-                        {!menu.isLive && (
+                        <div className="flex items-center space-x-2">
+                          {!menu.isLive && (
+                            <button
+                              className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
+                              onClick={() => setMenuAsLive(menu.menuID)}
+                            >
+                              Set Live
+                            </button>
+                          )}
+
                           <button
-                            className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
-                            onClick={() => setMenuAsLive(menu.menuID)}
+                            className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition"
+                            onClick={() => handleDeleteMenu(menu.menuID)}
                           >
-                            Set Live
+                            Delete
                           </button>
-                        )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -491,45 +507,24 @@ const MenusPage = () => {
                         </div>
                       </div>
 
-                      <p className="text-gray-600 text-sm mb-2">
-                        {dish.description || "No description available."}
-                      </p>
-
-                      {dish.ingredients?.length > 0 && (
-                        <div className="mt-2 mb-3">
-                          <h4 className="text-xs font-medium text-gray-700 mb-1">
-                            Ingredients:
-                          </h4>
-                          <div className="flex flex-wrap gap-1">
-                            {dish.ingredients?.map((ing, idx) => (
-                              <span
-                                key={idx}
-                                className="inline-block bg-gray-100 px-2 py-0.5 rounded text-xs text-gray-700"
-                              >
-                                {ing}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
+                      {dish.description && (
+                        <p className="text-gray-600 text-sm mt-2">
+                          {dish.description}
+                        </p>
                       )}
 
-                      <div className="flex justify-between mt-2">
-                        <button className="px-3 py-1 text-xs border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition">
-                          Edit
-                        </button>
-                        {liveMenu && (
-                          <button
-                            className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
-                            onClick={() => addDishToMenu(dish)}
-                          >
-                            Add to Menu
-                          </button>
-                        )}
-                      </div>
+                      {dish.ingredients?.length > 0 && (
+                        <div className="mt-2">
+                          <p className="text-xs text-gray-500">
+                            {dish.ingredients.slice(0, 3).join(", ")}
+                            {dish.ingredients.length > 3 ? "..." : ""}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
-                </div>
+              </div>
             )}
           </div>
         )}

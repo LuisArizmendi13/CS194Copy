@@ -35,7 +35,7 @@ const useDishes = (user, session) => {
     }
   };
 
-  return { dishes, loading, error, reload: loadDishes };
+  return { dishes, loading, error, addDish, reload: loadDishes };
 };
 
 export default useDishes;

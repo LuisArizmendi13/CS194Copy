@@ -14,16 +14,21 @@ const MenuPage = () => {
   const [selectedDishes, setSelectedDishes] = useState([]);
 
   useEffect(() => {
+    if (loading) return; // ✅ Don't proceed until menus finish loading
+  
+    console.log("Menus state in MenuPage:", menus); // Debugging step
     const fetchedMenu = menus.find((m) => m.menuID === menuID);
     if (fetchedMenu) {
+      console.log("Found menu:", fetchedMenu); // ✅ Confirm menu retrieval
       setMenu(fetchedMenu);
       setSelectedDishes(fetchedMenu.dishes || []);
       setLoading(false);
     } else {
+      console.log("Menu not found for ID:", menuID); // ✅ Debugging step
       setError("Menu not found.");
       setLoading(false);
     }
-  }, [menus, menuID]);
+  }, [menus, menuID, loading]); // ✅ Include `loading` in dependencies
 
   // ✅ Updated function to update dishes using useMenus.js
   const handleUpdateDishes = async (updatedDishes) => {

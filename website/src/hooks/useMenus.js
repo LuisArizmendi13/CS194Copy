@@ -8,33 +8,29 @@ const useMenus = (session) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!session) return;
-
     const getMenus = async () => {
       try {
         const restaurantId = getUserRestaurantId(session);
         if (!restaurantId) {
-          setLoading(false);
+          setLoading(false); // ✅ Ensure loading stops
           return;
         }
-
+  
         const menusData = await fetchMenus(restaurantId);
+        console.log("Fetched menus from DB:", menusData); // ✅ Debugging Step
         setMenus(menusData);
-
-        const liveMenuID = sessionStorage.getItem("liveMenuID");
-        const currentLiveMenu =
-          menusData.find((menu) => menu.menuID === liveMenuID) ||
-          menusData.find((menu) => menu.isLive);
-        setLiveMenuState(currentLiveMenu);
+        setLoading(false); // ✅ Ensure loading stops
       } catch (error) {
         console.error("Error fetching menus:", error);
-      } finally {
-        setLoading(false);
+        setLoading(false); // ✅ Ensure loading stops
       }
     };
-
-    getMenus();
+  
+    if (session) {
+      getMenus();
+    }
   }, [session]);
+  
 
   // ✅ New function to set a menu as live
   const setMenuAsLive = async (menuId) => {
@@ -123,7 +119,8 @@ const useMenus = (session) => {
   };
   
 
-  return { menus, liveMenu, loading, setMenuAsLive };
+  return { menus, liveMenu, loading, setMenuAsLive, deleteMenu, updateMenu, addDishToMenu };
+
 };
 
 export default useMenus;

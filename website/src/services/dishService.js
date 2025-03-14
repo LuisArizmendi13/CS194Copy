@@ -29,5 +29,5 @@ export const addDishToDatabase = async (dish, restaurantId) => {
     Item: dishWithRestaurant,
   }).promise();
 
-  return dishWithRestaurant; // ✅ Return the saved dish
+  return dishWithRestaurant;
 };
