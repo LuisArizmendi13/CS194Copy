@@ -19,8 +19,8 @@ const LiveMenuPage = () => {
     try {
       const params = {
         TableName: MENUS_TABLE_NAME,
-        FilterExpression: "restaurantId = :rId",
-        ExpressionAttributeValues: { ":rId": restaurantId },
+        FilterExpression: "restaurantId = :rId AND isLive = :true",
+        ExpressionAttributeValues: { ":rId": restaurantId, ":true": true },
       };
       const data = await dynamoDb.scan(params).promise();
 
