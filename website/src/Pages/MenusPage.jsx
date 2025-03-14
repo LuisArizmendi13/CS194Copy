@@ -522,15 +522,8 @@ const MenusPage = () => {
                       {/* ✅ Added Edit and Delete Buttons */}
                       <div className="flex justify-between mt-3">
                         <button
-                          className="px-3 py-1 text-xs border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition"
-                          onClick={() => handleModifyDish(dish)}
-                        >
-                          Edit
-                        </button>
-
-                        <button
                           className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition"
-                          //onClick={() => handleDeleteDish(dish.dishId)}
+                          onClick={() => handleDeleteDish(dish.dishId)}
                         >
                           Delete
                         </button>

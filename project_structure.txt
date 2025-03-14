@@ -1,11 +1,18 @@
-.
+./
+├── .DS_Store
+├── .env.local
+├── .gitignore
+├── .vscode/
+│   └── launch.json
 ├── README.md
-├── client-menu
+├── alanaespositofile 2
+├── client-menu/
+│   ├── .gitignore
 │   ├── README.md
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── postcss.config.js
-│   ├── public
+│   ├── public/
 │   │   ├── favicon.ico
 │   │   ├── favicon1.ico
 │   │   ├── index.html
@@ -13,14 +20,14 @@
 │   │   ├── logo512.png
 │   │   ├── manifest.json
 │   │   └── robots.txt
-│   ├── src
+│   ├── src/
 │   │   ├── App.css
 │   │   ├── App.js
-│   │   ├── Pages
+│   │   ├── Pages/
 │   │   │   ├── LiveMenuPage.jsx
 │   │   │   └── OrderPage.jsx
 │   │   ├── aws-config.js
-│   │   ├── components
+│   │   ├── components/
 │   │   │   └── Navbar.jsx
 │   │   ├── index.css
 │   │   ├── index.js
@@ -31,9 +38,11 @@
 ├── package-lock.json
 ├── package.json
 ├── project_structure.txt
-└── website
+└── website/
+    ├── .DS_Store
+    ├── .gitignore
     ├── README.md
-    ├── build
+    ├── build/
     │   ├── asset-manifest.json
     │   ├── favicon.ico
     │   ├── index.html
@@ -41,11 +50,11 @@
     │   ├── logo512.png
     │   ├── manifest.json
     │   ├── robots.txt
-    │   └── static
-    │       ├── css
+    │   └── static/
+    │       ├── css/
     │       │   ├── main.b39a4673.css
     │       │   └── main.b39a4673.css.map
-    │       └── js
+    │       └── js/
     │           ├── 488.0870ce05.chunk.js
     │           ├── 488.0870ce05.chunk.js.map
     │           ├── main.632162a4.js
@@ -54,20 +63,22 @@
     ├── package-lock.json
     ├── package.json
     ├── postcss.config.js
-    ├── public
+    ├── public/
     │   ├── favicon.ico
     │   ├── favicon1.ico
     │   ├── index.html
     │   ├── logo192.png
     │   ├── logo512.png
     │   ├── manifest.json
-    │   └── robots.txt
-    ├── src
+    │   ├── robots.txt
+    │   └── sales_data_for_archive.json
+    ├── src/
     │   ├── App.js
-    │   ├── CSS
+    │   ├── CSS/
     │   │   ├── App.css
     │   │   └── index.css
-    │   ├── Pages
+    │   ├── Pages/
+    │   │   ├── AnalyticsPage.jsx
     │   │   ├── ArchivePage.jsx
     │   │   ├── ConfirmSignUp.jsx
     │   │   ├── DishesPage.jsx
@@ -75,56 +86,79 @@
     │   │   ├── LiveMenuPage.jsx
     │   │   ├── MenuCreationPage.jsx
     │   │   ├── MenuPage.jsx
+    │   │   ├── MenusPage.jsx
     │   │   ├── MyMenusPage.jsx
+    │   │   ├── OrdersPage.jsx
     │   │   ├── SignIn.jsx
     │   │   └── SignUp.jsx
     │   ├── aws-config.js
-    │   ├── classes
+    │   ├── backend/
+    │   │   ├── .gitignore
+    │   │   ├── aiInsights.js
+    │   │   ├── server.js
+    │   │   └── uploads/
+    │   │       ├── 217ff4662321b98c659517288d5dc72c
+    │   │       ├── 239f54f2e7840a2495ce3f568a3d4560
+    │   │       ├── 5fd001ad72c11495af3e654bfa466c25
+    │   │       ├── 60f2509bcacf755c0b158c7f7d7eb83d
+    │   │       ├── 7ee0bf2a1eb0ff02ab7070692d9ddb37
+    │   │       ├── bf7412fc5c0aa7451fe5effaabfa9c48
+    │   │       ├── d9c27e785993e9395efa4fdc8b0b930f
+    │   │       └── df84fa57e6e0c47603fa685a8a26a7fc
+    │   ├── classes/
     │   │   ├── dish.js
     │   │   └── menu.js
-    │   ├── components
+    │   ├── components/
     │   │   ├── AddDishPopup.jsx
-    │   │   ├── Analytics
-    │   │   │   ├── AnalyticsPage.jsx
-    │   │   │   ├── Charts
-    │   │   │   │   ├── BestSellingChart.jsx
-    │   │   │   │   ├── RevenueProfitChart.jsx
-    │   │   │   │   ├── SalesByDayChart.jsx
-    │   │   │   │   ├── SalesByTimeOfDayChart.jsx
-    │   │   │   │   ├── SalesTrendChart.jsx
-    │   │   │   │   └── SeasonalPerformanceChart.jsx
+    │   │   ├── AiAssistantBox.jsx
+    │   │   ├── Analytics/
+    │   │   │   ├── Charts/
+    │   │   │   ├── WeatherPerformanceChart.jsx
     │   │   │   ├── processSalesData.js
+    │   │   │   ├── processSalesData.test.js
     │   │   │   └── sales_data.json
-    │   │   ├── Calendar
+    │   │   ├── Calendar/
     │   │   │   ├── calendardisplay.html
     │   │   │   └── calendardisplay.jsx
+    │   │   ├── DeleteButtonWithConfirmation.jsx
     │   │   ├── DishBox.jsx
-    │   │   ├── DishDetailsPage.jsx
     │   │   ├── DishList.jsx
-    │   │   ├── DishesPage.jsx
-    │   │   ├── DishesPageold.jsx
     │   │   ├── FormInput.jsx
+    │   │   ├── GeneratedMenu.jsx
     │   │   ├── LiveDishBox.jsx
     │   │   ├── LiveDishList.jsx
-    │   │   ├── Menus
+    │   │   ├── Menus/
     │   │   │   ├── DishSelectionPopup.jsx
     │   │   │   ├── MenuBox.jsx
     │   │   │   ├── MenuList.jsx
+    │   │   │   ├── MyMenusSection.jsx
     │   │   │   └── NewMenuButton.jsx
     │   │   ├── Navbar.jsx
     │   │   ├── NewDishButton.jsx
-    │   │   └── SelectableDishList.jsx
-    │   ├── constants
-    │   │   └── names.js
-    │   ├── context
+    │   │   ├── OldPageVersions/
+    │   │   │   ├── DishDetailsPage.jsx
+    │   │   │   ├── DishesPage.jsx
+    │   │   │   └── DishesPageold.jsx
+    │   │   ├── QRCodeComponent.jsx
+    │   │   ├── SelectableDishList.jsx
+    │   │   └── UploadMenuPopup.jsx
+    │   ├── constants/
+    │   │   ├── names.js
+    │   │   └── websites.js
+    │   ├── context/
     │   │   └── AuthContext.js
-    │   ├── hooks
-    │   │   └── useFetchMenus.js
+    │   ├── hooks/
+    │   │   ├── useDishes.js
+    │   │   ├── useFetchMenus.js
+    │   │   └── useMenus.js
     │   ├── index.js
     │   ├── reportWebVitals.js
-    │   └── utils
-    │       └── auth.js
-    ├── src.zip
+    │   ├── services/
+    │   │   ├── dishService.js
+    │   │   └── menuService.js
+    │   └── utils/
+    │       ├── auth.js
+    │       └── menuHelpers.js
     └── tailwind.config.js
 
-25 directories, 103 files
+30 directories, 132 files

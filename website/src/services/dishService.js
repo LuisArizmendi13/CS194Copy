@@ -32,9 +32,13 @@ export const modifyDish = async (dish) => {
   const params = {
     TableName: TABLE_NAME,
     Key: { dishId: dish.dishId },
-    UpdateExpression: "SET name = :name, price = :price, ingredients = :ingredients",
+    UpdateExpression: "SET #dishName = :name, description = :description, price = :price, ingredients = :ingredients",
+    ExpressionAttributeNames: {
+      "#dishName": "name", // ✅ Avoids reserved keyword issue
+    },
     ExpressionAttributeValues: {
       ":name": dish.name,
+      ":description": dish.description,
       ":price": dish.price,
       ":ingredients": dish.ingredients || [],
     },
