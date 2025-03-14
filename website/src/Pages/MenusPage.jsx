@@ -6,8 +6,6 @@ import useDishes from "../hooks/useDishes";
 import AddDishPopup from "../components/AddDishPopup";
 import { getCategories, getFilteredDishes } from "../utils/menuHelpers";
 
-
-
 const MenusPage = () => {
   const { user, session } = useAuth();
   const { menus, liveMenu, loading: menusLoading, deleteMenu, setMenuAsLive, addDishToMenu } = useMenus(session);
