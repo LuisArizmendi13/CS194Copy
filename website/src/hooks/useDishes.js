@@ -24,7 +24,7 @@ const useDishes = (user, session) => {
     loadDishes();
   }, [loadDishes]);
 
-
+  // ✅ Add a new dish
   const addDish = async (dish) => {
     try {
       const restaurantId = getUserRestaurantId(session);
@@ -44,6 +44,7 @@ const useDishes = (user, session) => {
       setError("Failed to delete dish.");
     }
   };
+
 
   const handleModifyDish = async (updatedDish) => {
     try {
