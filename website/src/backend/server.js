@@ -9,7 +9,7 @@ const OpenAI = require("openai");
 const aiInsightsRouter = require("./aiInsights");
 
 const app = express();
-const port = 6000;
+const port = 8080;
 
 // CORS configuration - much simpler with broad permissions
 app.use(cors());
@@ -113,21 +113,27 @@ app.post("/api/upload-menu", upload.single("file"), async (req, res) => {
       ],
     });
 
-    const chatResult = chatResponse.choices[0].message.content;
+    const chatResult = chatResponse.choices[0].message.content.trim();
     console.log("✅ ChatGPT Response:", chatResult);
 
-    // Step 3: Parse ChatGPT Response into Dish Objects
     let parsedDishes;
     try {
-      parsedDishes = JSON.parse(chatResult);
+      // Ensure it's valid JSON
+      const jsonStart = chatResult.indexOf("[");
+      const jsonEnd = chatResult.lastIndexOf("]") + 1;
+      if (jsonStart === -1 || jsonEnd === -1) {
+        throw new Error("No valid JSON detected in ChatGPT response.");
+      }
+
+      const validJson = chatResult.slice(jsonStart, jsonEnd);
+      parsedDishes = JSON.parse(validJson);
+
       if (!Array.isArray(parsedDishes) || parsedDishes.length === 0) {
         throw new Error("No valid dishes extracted.");
       }
     } catch (error) {
       console.error("❌ Error parsing ChatGPT response:", error);
-      return res
-        .status(500)
-        .json({ message: "Failed to parse ChatGPT response." });
+      return res.status(500).json({ message: "Failed to parse ChatGPT response. Check formatting." });
     }
 
     console.log("🍽 Parsed Dishes Before Price Fix:", parsedDishes);
