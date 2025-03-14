@@ -1,17 +1,15 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
-  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
-    <nav className="bg-gray-900 text-white p-4 flex justify-between items-center">
-      <span className="text-xl font-bold">Menu Venue</span>
-      <div className="space-x-4">
-        <button className="hover:underline" onClick={() => navigate("/")}>Live Menu</button>
-        <button className="hover:underline" onClick={() => navigate("/order")}>Order</button>
+    <header className="bg-gray-800 text-white p-4">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-2xl font-bold">Menu Venue</h1>
       </div>
-    </nav>
+    </header>
   );
 };
 
