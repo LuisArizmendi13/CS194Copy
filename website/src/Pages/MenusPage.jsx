@@ -3,7 +3,8 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import useMenus from "../hooks/useMenus";
 import useDishes from "../hooks/useDishes";
-import AddDishPopup from "../components/AddDishPopup";
+import AddDishPopup from "../components/AddDishPopup"; 
+import UploadMenuPopup from "../components/UploadMenuPopup";
 import { getCategories, getFilteredDishes } from "../utils/menuHelpers";
 
 const MenusPage = () => {
@@ -17,7 +18,9 @@ const MenusPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const categories = getCategories(liveMenu);
-  const filteredDishes = getFilteredDishes(liveMenu, selectedCategory);
+  const filteredDishes = getFilteredDishes(liveMenu, selectedCategory); 
+  const [showUploadPopup, setShowUploadPopup] = useState(false);
+
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -325,11 +328,15 @@ const MenusPage = () => {
                 >
                   + New Menu
                 </button>
-                <button className="px-3 py-1.5 text-sm bg-rose-500 text-white rounded hover:bg-rose-600 transition">
+                <button className="px-3 py-1.5 text-sm bg-rose-500 text-white rounded hover:bg-rose-600 transition" 
+                  onClick={()=>setShowUploadPopup(true) }>
                   AI Generate   {/* No Functionality?*/}
-                </button>
+                </button> 
+                {/* Upload Popup - Shows only when showUploadPopup is true */}
+        {showUploadPopup && <UploadMenuPopup onClose={() => setShowUploadPopup(false)} />}
               </div>
-            </div>
+            </div> 
+            
 
             {dishes.length === 0 && (
               <div className="bg-amber-50 border-l-4 border-amber-500 p-3 mb-4 text-sm">
