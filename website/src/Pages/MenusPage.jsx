@@ -245,7 +245,7 @@ const handleDeleteMenu = (menuID) => {
                 )}
 
                 {/* Menu Items */}
-                {getFilteredDishes().length === 0 ? (
+                {getFilteredDishes(liveMenu, selectedCategory).length === 0 ?  (
                   <div className="bg-white p-4 rounded-md shadow-sm text-center">
                     <p className="text-gray-600 mb-4">
                       No dishes have been added to this menu yet.
@@ -259,7 +259,7 @@ const handleDeleteMenu = (menuID) => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {getFilteredDishes().map((dish) => (
+                    {getFilteredDishes(liveMenu, selectedCategory).map((dish) => (
                       <div
                         key={dish.dishId}
                         className="bg-white rounded-md shadow-sm overflow-hidden hover:shadow-md transition"
