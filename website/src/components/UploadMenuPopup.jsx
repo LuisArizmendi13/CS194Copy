@@ -27,7 +27,7 @@ const UploadMenuPopup = ({ onClose }) => {
 
     try {
       console.log("📤 Uploading file to backend...");
-      const response = await axios.post("http://localhost:5000/api/upload-menu", formData, {
+      const response = await axios.post("http://localhost:8080/api/upload-menu", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`
