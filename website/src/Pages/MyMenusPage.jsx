@@ -36,9 +36,7 @@ const MyMenusPage = () => {
   };
 
   const handleDeleteMenu = (menuID) => {
-    if (window.confirm("Are you sure you want to delete this menu? This action cannot be undone.")) {
-      deleteMenu(menuID);
-    }
+    deleteMenu(menuID);
   };
 
   return (
