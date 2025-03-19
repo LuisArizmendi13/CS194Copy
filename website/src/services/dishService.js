@@ -1,5 +1,5 @@
 // src/services/dishService.js
-import { dynamoDb, TABLE_NAME, getUserRestaurantId } from "../aws-config";
+import { dynamoDb, TABLE_NAME } from "../aws-config";
 
 // Fetch dishes for a restaurant.
 export const fetchDishes = async (restaurantId) => {
@@ -12,11 +12,9 @@ export const fetchDishes = async (restaurantId) => {
   return data.Items;
 };
 
-// Fetch unique ingredients from all dishes for a restaurant
-export const fetchIngredients = async (session) => {
+// Fetch unique ingredients for a restaurant
+export const fetchIngredients = async (restaurantId) => {
   try {
-    const restaurantId = getUserRestaurantId(session);
-    
     const params = {
       TableName: TABLE_NAME,
       FilterExpression: "restaurantId = :rId",

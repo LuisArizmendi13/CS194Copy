@@ -2,11 +2,11 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import useDishes from "../hooks/useDishes";
-import InfoBox from "../components/InfoBox";
+import InfoBox from "../components/Common/InfoBox";
 import MenuNav from "../components/Menus/MenuNav";
-import DishCard from "../components/Menus/DishCard";
+import DishCard from "../components/Dishes/DishCard";
 import AddDishPopup from "../components/Dishes/AddDishPopup";
-import EditDishPopup from "../components/Dishes/EditDishPopup"; // Import the new component
+import EditDishPopup from "../components/Dishes/EditDishPopup";
 
 /**
  * Page component for managing dishes in the dish library
@@ -15,6 +15,7 @@ const DishesPage = () => {
   const { user, session } = useAuth();
   const { 
     dishes, 
+    ingredients,
     handleModifyDish, 
     handleDeleteDish, 
     loading: dishesLoading, 
@@ -46,10 +47,7 @@ const DishesPage = () => {
   
   // Handler for saving edited dish
   const handleSaveEdit = (updatedDish) => {
-    // Pass directly to the hook's handleModifyDish function
-    handleModifyDish(updatedDish);
-    setShowEditPopup(false);
-    setDishToEdit(null);
+    return handleModifyDish(updatedDish);
   };
 
   return (
@@ -102,7 +100,6 @@ const DishesPage = () => {
                 showActions={true}
                 onDelete={handleDeleteDish}
                 onEdit={handleEditClick}
-                // onAdd prop is removed completely
               />
             ))}
           </div>
@@ -113,6 +110,7 @@ const DishesPage = () => {
           <AddDishPopup
             onClose={() => setShowDishPopup(false)}
             onSave={addDish}
+            ingredientsList={ingredients}
           />
         )}
         
@@ -125,6 +123,8 @@ const DishesPage = () => {
               setDishToEdit(null);
             }}
             onSave={handleSaveEdit}
+            onDelete={handleDeleteDish}
+            ingredientsList={ingredients}
           />
         )}
       </div>

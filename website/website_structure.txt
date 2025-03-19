@@ -66,7 +66,6 @@
 │   │   ├── dish.js
 │   │   └── menu.js
 │   ├── components
-│   │   ├── AddDishPopup.jsx
 │   │   ├── AiAssistantBox.jsx
 │   │   ├── Analytics
 │   │   │   ├── Charts
@@ -83,25 +82,22 @@
 │   │   ├── Calendar
 │   │   │   ├── calendardisplay.html
 │   │   │   └── calendardisplay.jsx
-│   │   ├── DeleteButtonWithConfirmation.jsx
-│   │   ├── DishBox.jsx
-│   │   ├── DishList.jsx
+│   │   ├── Common
+│   │   │   ├── DeleteButtonWithConfirmation.jsx
+│   │   │   ├── FormInput.jsx
+│   │   │   └── InfoBox.jsx
 │   │   ├── Dishes
+│   │   │   ├── AddDishPopup.jsx
+│   │   │   ├── DishBox.jsx
+│   │   │   ├── DishCard.jsx
 │   │   │   ├── DishForm.jsx
 │   │   │   └── EditDishPopup.jsx
-│   │   ├── FormInput.jsx
-│   │   ├── GeneratedMenu.jsx
-│   │   ├── InfoBox.jsx
-│   │   ├── LiveDishBox.jsx
-│   │   ├── LiveDishList.jsx
 │   │   ├── Menus
-│   │   │   ├── DishCard.jsx
 │   │   │   ├── DishSelectionPopup.jsx
-│   │   │   ├── MenuBox.jsx
+│   │   │   ├── GeneratedMenu.jsx
 │   │   │   ├── MenuCard.jsx
-│   │   │   ├── MenuList.jsx
 │   │   │   ├── MenuNav.jsx
-│   │   │   └── NewMenuButton.jsx
+│   │   │   └── UploadMenuPopup.jsx
 │   │   ├── Navbar.jsx
 │   │   ├── NewDishButton.jsx
 │   │   ├── OldPageVersions
@@ -109,8 +105,7 @@
 │   │   │   ├── DishesPage.jsx
 │   │   │   └── DishesPageold.jsx
 │   │   ├── QRCodeComponent.jsx
-│   │   ├── SelectableDishList.jsx
-│   │   └── UploadMenuPopup.jsx
+│   │   └── SelectableDishList.jsx
 │   ├── constants
 │   │   ├── names.js
 │   │   └── websites.js
@@ -132,4 +127,4 @@
 ├── website__structure.txt
 └── website_structure.txt
 
-24 directories, 109 files
+25 directories, 103 files

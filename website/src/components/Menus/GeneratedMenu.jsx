@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { dynamoDb, MENUS_TABLE_NAME, getUserRestaurantId } from ".//../aws-config";
-import { useAuth } from "../context/AuthContext";
+import { dynamoDb, MENUS_TABLE_NAME, getUserRestaurantId } from "../../aws-config";
+import { useAuth } from "../../context/AuthContext";
 
 const GeneratedMenu = ({ extractedMenu, onClose }) => {
   const { session } = useAuth();

@@ -1,42 +1,53 @@
 import React from 'react';
 import DishForm from './DishForm';
+import DeleteButtonWithConfirmation from '../Common/DeleteButtonWithConfirmation';
 
 /**
  * Popup component for editing an existing dish
- * @param {Object} props - Component props
- * @param {Object} props.dish - The dish to edit
- * @param {Function} props.onClose - Function to close the popup
- * @param {Function} props.onSave - Function to handle saving the edited dish
  */
-const EditDishPopup = ({ dish, onClose, onSave }) => {
-  const handleSaveEdit = (updatedDishData) => {
-    try {
-      // Preserve fields that shouldn't be modified during edit
-      const updatedDish = {
-        ...dish, // Keep original fields like creation timestamp, sales history, etc.
-        ...updatedDishData, // Override with updated fields
-      };
-      
-      // Pass to parent component's save handler
-      onSave(updatedDish);
-    } catch (error) {
-      console.error("Error preparing updated dish data:", error);
-      alert("An error occurred while updating the dish. Please try again.");
+const EditDishPopup = ({ dish, onClose, onSave, onDelete, ingredientsList = [] }) => {
+  const handleSave = async (dishData) => {
+    // Keep any existing fields not included in the form
+    const updatedDish = {
+      ...dish,
+      ...dishData
+    };
+    
+    const success = await onSave(updatedDish);
+    if (success) {
+      onClose();
+    }
+  };
+
+  const handleDelete = async () => {
+    const success = await onDelete(dish.dishId);
+    if (success) {
+      onClose();
     }
   };
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-96">
-        <div className="bg-gray-800 text-white p-4 rounded-t-lg text-lg font-bold">
-          Edit Dish: {dish.name}
+      <div className="bg-white rounded-lg shadow-lg w-96 max-w-full max-h-screen overflow-auto">
+        <div className="bg-gray-800 text-white p-4 rounded-t-lg flex justify-between items-center sticky top-0">
+          <div className="text-lg font-bold">Edit Dish: {dish.name}</div>
+          
+          <DeleteButtonWithConfirmation
+            onConfirm={handleDelete}
+            message="Are you sure you want to delete this dish?"
+            confirmText="Delete"
+            cancelText="Cancel"
+            buttonText="Delete"
+            buttonClassName="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+            modalClassName="z-[60]" 
+          />
         </div>
         
         <DishForm 
           initialDish={dish}
-          onSave={handleSaveEdit}
+          ingredientsList={ingredientsList}
+          onSave={handleSave}
           onClose={onClose}
-          mode="edit"
         />
       </div>
     </div>
