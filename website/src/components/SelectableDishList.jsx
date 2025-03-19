@@ -1,5 +1,5 @@
 import React from 'react';
-import DishBox from './DishBox';
+import DishBox from './Dishes/DishBox';
 
 const SelectableDishList = ({ dishes, onDishSelect, selectedDishes }) => {
   return (

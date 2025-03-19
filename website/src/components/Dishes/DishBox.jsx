@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { dynamoDb, TABLE_NAME } from '../aws-config';
-import DeleteButtonWithConfirmation from './DeleteButtonWithConfirmation'; // Adjusted import
+import { dynamoDb, TABLE_NAME } from '../../aws-config';
+import DeleteButtonWithConfirmation from '../Common/DeleteButtonWithConfirmation'; // Adjusted import
 
 const DishBox = ({ dish, onDishSelect, isSelected, isSelectable, onDelete }) => {
   const [showIngredients, setShowIngredients] = useState(false);

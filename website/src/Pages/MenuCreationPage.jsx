@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserRestaurantId } from "../aws-config";
 import { useAuth } from "../context/AuthContext";
-import FormInput from "../components/FormInput";
+import FormInput from "../components/Common/FormInput";
 import DishSelectionPopup from "../components/Menus/DishSelectionPopup";
+import MenuNav from "../components/Menus/MenuNav"; 
 import { createMenu } from "../services/menuService";
 
 const MenuCreationPage = () => {
@@ -31,8 +32,11 @@ const MenuCreationPage = () => {
       return;
     }
 
+    // Generate a more unique ID with substring instead of substr
+    const menuID = `menu-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+
     const newMenu = {
-      menuID: `menu-${Date.now()}`,
+      menuID,
       name: menuName.trim(),
       description: menuDescription.trim(),
       restaurantId,
@@ -44,8 +48,8 @@ const MenuCreationPage = () => {
       setIsSaving(true);
       await createMenu(newMenu);
       console.log("✅ Menu successfully saved: ", newMenu);
-      console.log("Navigating to /mymenus");
-      navigate("/menus");
+      console.log("Navigating to /menus/my-menus");
+      navigate("/menus/my-menus"); // Updated navigation path
     } catch (error) {
       console.error("❌ Error saving menu:", error);
       setErrorMessage("An error occurred while saving the menu. Please try again.");
@@ -56,6 +60,9 @@ const MenuCreationPage = () => {
 
   return (
     <div className="p-6 mx-auto max-w-4xl">
+      {/* Add MenuNav component at the top of the page */}
+      <MenuNav />
+      
       <h2 className="text-2xl font-bold mb-4">Create a New Menu</h2>
       <p className="text-gray-600">Fill in the details to create your menu.</p>
 
@@ -105,7 +112,7 @@ const MenuCreationPage = () => {
         <div className="flex justify-between items-center mt-6">
           <button
             type="button"
-            onClick={() => navigate("/mymenus")}
+            onClick={() => navigate("/menus/my-menus")} // Updated navigation path
             className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
           >
             ← Cancel

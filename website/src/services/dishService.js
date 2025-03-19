@@ -12,6 +12,33 @@ export const fetchDishes = async (restaurantId) => {
   return data.Items;
 };
 
+// Fetch unique ingredients for a restaurant
+export const fetchIngredients = async (restaurantId) => {
+  try {
+    const params = {
+      TableName: TABLE_NAME,
+      FilterExpression: "restaurantId = :rId",
+      ExpressionAttributeValues: { ":rId": restaurantId },
+    };
+    
+    const data = await dynamoDb.scan(params).promise();
+    
+    // Extract all ingredients from all dishes and remove duplicates
+    const ingredients = data.Items.reduce((acc, item) => {
+      if (item.ingredients && Array.isArray(item.ingredients)) {
+        acc.push(...item.ingredients);
+      }
+      return acc;
+    }, []);
+    
+    // Return unique, sorted ingredients
+    return [...new Set(ingredients)].sort();
+  } catch (error) {
+    console.error("Error fetching ingredients:", error);
+    throw new Error("Failed to fetch ingredients");
+  }
+};
+
 // Delete a dish by dishId with error handling.
 export const deleteDish = async (dishId) => {
   try {

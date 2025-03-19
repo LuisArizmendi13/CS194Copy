@@ -7,13 +7,16 @@ import {
 } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
 import HomePage from "./Pages/HomePage";
-import MenusPage from "./Pages/MenusPage"; // Import the new consolidated MenusPage
+import MenusPage from "./Pages/MenusPage"; // Acts as router/redirect component
+import LiveMenuPage from "./Pages/LiveMenuPage";
+import MyMenusPage from "./Pages/MyMenusPage";
+import DishesPage from "./Pages/DishesPage";
 import MenuPage from "./Pages/MenuPage";
-import MenuCreationPage from "./Pages/MenuCreationPage.jsx";
+import MenuCreationPage from "./Pages/MenuCreationPage";
 import ArchivePage from "./Pages/ArchivePage";
 import SignUp from "./Pages/SignUp";
 import SignIn from "./Pages/SignIn";
-import OrdersPage from "./Pages/OrdersPage.jsx";
+import OrdersPage from "./Pages/OrdersPage";
 import AnalyticsPage from "./Pages/AnalyticsPage";
 import ConfirmSignUp from "./Pages/ConfirmSignUp";
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -39,16 +42,31 @@ const AppContent = () => {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/confirm" element={<ConfirmSignUp />} />
 
-        {/* New consolidated menus route */}
+        {/* Menu routes with nested structure */}
         <Route
           path="/menus"
           element={<ProtectedRoute element={<MenusPage />} />}
         />
+        <Route
+          path="/menus/live-menu"
+          element={<ProtectedRoute element={<LiveMenuPage />} />}
+        />
+        <Route
+          path="/menus/my-menus"
+          element={<ProtectedRoute element={<MyMenusPage />} />}
+        />
+        <Route
+          path="/menus/dish-library"
+          element={<ProtectedRoute element={<DishesPage />} />}
+        />
 
         {/* Redirects for old routes */}
-        <Route path="/mymenus" element={<Navigate to="/menus?tab=menus" />} />
-        <Route path="/dishes" element={<Navigate to="/menus?tab=dishes" />} />
-        <Route path="/menu" element={<Navigate to="/menus?tab=live" />} />
+        <Route path="/mymenus" element={<Navigate to="/menus/my-menus" />} />
+        <Route path="/dishes" element={<Navigate to="/menus/dish-library" />} />
+        <Route path="/menu" element={<Navigate to="/menus/live-menu" />} />
+        
+        {/* Note: Query parameters (?tab=live) are handled in the 
+            MenusPage component's useEffect, not here in the router */}
 
         {/* Preserve other routes */}
         <Route

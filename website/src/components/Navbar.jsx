@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { APP_NAME } from "../constants/names";
 import { useAuth } from "../context/AuthContext";
 
-// Updated navigation links to use the consolidated approach
+// Navigation links remain the same since they use the parent path
 const NAV_LINKS = [
   { name: "Dashboard", path: "/" },
   { name: "Menus", path: "/menus" },
@@ -23,16 +23,15 @@ export const Navbar = () => {
     navigate("/signin", { replace: true });
   };
 
-  // Check if a path is active
+  // Updated isActive function to work with the new nested routes
   const isActive = (path) => {
     // For menus, consider submenu paths as active too
     if (path === "/menus") {
       return (
         location.pathname === "/menus" ||
-        location.pathname === "/mymenus" ||
-        location.pathname === "/dishes" ||
-        location.pathname === "/menu" ||
-        location.pathname.includes("/create-menu")
+        location.pathname.startsWith("/menus/") ||  // This covers all nested routes
+        location.pathname === "/create-menu" ||
+        location.pathname.includes("/menus/")
       );
     }
     return location.pathname === path;
