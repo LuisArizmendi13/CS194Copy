@@ -1,11 +1,12 @@
+// src/Pages/DishesPage.jsx
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import useDishes from "../hooks/useDishes";
-import useMenus from "../hooks/useMenus";
 import InfoBox from "../components/InfoBox";
 import MenuNav from "../components/Menus/MenuNav";
 import DishCard from "../components/Menus/DishCard";
-import AddDishPopup from "../components/AddDishPopup";
+import AddDishPopup from "../components/Dishes/AddDishPopup";
+import EditDishPopup from "../components/Dishes/EditDishPopup"; // Import the new component
 
 /**
  * Page component for managing dishes in the dish library
@@ -20,9 +21,10 @@ const DishesPage = () => {
     addDish 
   } = useDishes(user, session);
   
-  const { liveMenu, addDishToMenu } = useMenus(session);
   const [showHelpText, setShowHelpText] = useState(true);
   const [showDishPopup, setShowDishPopup] = useState(false);
+  const [showEditPopup, setShowEditPopup] = useState(false);
+  const [dishToEdit, setDishToEdit] = useState(null);
 
   if (dishesLoading) {
     return <div className="flex justify-center items-center min-h-screen bg-gray-100">Loading...</div>;
@@ -36,12 +38,18 @@ const DishesPage = () => {
     );
   }
   
-  const handleAddToMenu = (dish) => {
-    if (liveMenu) {
-      addDishToMenu(dish);
-    } else {
-      alert("Please set a live menu first before adding dishes to it.");
-    }
+  // Handler for the edit button click
+  const handleEditClick = (dish) => {
+    setDishToEdit(dish);
+    setShowEditPopup(true);
+  };
+  
+  // Handler for saving edited dish
+  const handleSaveEdit = (updatedDish) => {
+    // Pass directly to the hook's handleModifyDish function
+    handleModifyDish(updatedDish);
+    setShowEditPopup(false);
+    setDishToEdit(null);
   };
 
   return (
@@ -93,8 +101,8 @@ const DishesPage = () => {
                 dish={dish}
                 showActions={true}
                 onDelete={handleDeleteDish}
-                onEdit={handleModifyDish}
-                onAdd={liveMenu ? handleAddToMenu : null}
+                onEdit={handleEditClick}
+                // onAdd prop is removed completely
               />
             ))}
           </div>
@@ -105,6 +113,18 @@ const DishesPage = () => {
           <AddDishPopup
             onClose={() => setShowDishPopup(false)}
             onSave={addDish}
+          />
+        )}
+        
+        {/* Edit Dish Popup */}
+        {showEditPopup && dishToEdit && (
+          <EditDishPopup
+            dish={dishToEdit}
+            onClose={() => {
+              setShowEditPopup(false);
+              setDishToEdit(null);
+            }}
+            onSave={handleSaveEdit}
           />
         )}
       </div>

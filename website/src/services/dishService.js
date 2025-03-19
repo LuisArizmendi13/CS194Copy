@@ -1,5 +1,5 @@
 // src/services/dishService.js
-import { dynamoDb, TABLE_NAME } from "../aws-config";
+import { dynamoDb, TABLE_NAME, getUserRestaurantId } from "../aws-config";
 
 // Fetch dishes for a restaurant.
 export const fetchDishes = async (restaurantId) => {
@@ -10,6 +10,35 @@ export const fetchDishes = async (restaurantId) => {
   };
   const data = await dynamoDb.scan(params).promise();
   return data.Items;
+};
+
+// Fetch unique ingredients from all dishes for a restaurant
+export const fetchIngredients = async (session) => {
+  try {
+    const restaurantId = getUserRestaurantId(session);
+    
+    const params = {
+      TableName: TABLE_NAME,
+      FilterExpression: "restaurantId = :rId",
+      ExpressionAttributeValues: { ":rId": restaurantId },
+    };
+    
+    const data = await dynamoDb.scan(params).promise();
+    
+    // Extract all ingredients from all dishes and remove duplicates
+    const ingredients = data.Items.reduce((acc, item) => {
+      if (item.ingredients && Array.isArray(item.ingredients)) {
+        acc.push(...item.ingredients);
+      }
+      return acc;
+    }, []);
+    
+    // Return unique, sorted ingredients
+    return [...new Set(ingredients)].sort();
+  } catch (error) {
+    console.error("Error fetching ingredients:", error);
+    throw new Error("Failed to fetch ingredients");
+  }
 };
 
 // Delete a dish by dishId with error handling.

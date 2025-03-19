@@ -1,22 +1,12 @@
+// src/components/menus/DishCard.jsx
 import React from "react";
 
-/**
- * Reusable card component for displaying dish information
- * Used in LiveMenuPage, DishesPage, and MenuCreationPage
- * 
- * @param {Object} props - Component props
- * @param {Object} props.dish - The dish object to display
- * @param {boolean} props.showActions - Whether to show action buttons
- * @param {Function} props.onDelete - Function to call when Delete button is clicked
- * @param {Function} props.onEdit - Function to call when Edit button is clicked
- * @param {Function} props.onAdd - Function to call when Add to Menu button is clicked
- */
 const DishCard = ({ 
   dish, 
   showActions = false, 
   onDelete, 
-  onEdit, 
-  onAdd 
+  onEdit 
+  // Removed onAdd parameter
 }) => {
   return (
     <div className="bg-white rounded-md shadow-sm overflow-hidden hover:shadow-md transition">
@@ -52,16 +42,10 @@ const DishCard = ({
           </div>
         )}
 
+        {/* Updated action buttons layout */}
         {showActions && (
           <div className="flex justify-between mt-3">
-            {onAdd && (
-              <button
-                className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
-                onClick={() => onAdd(dish)}
-              >
-                Add to Menu
-              </button>
-            )}
+            {/* Edit button moved to the left */}
             {onEdit && (
               <button
                 className="px-3 py-1 text-xs border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition"
@@ -70,6 +54,8 @@ const DishCard = ({
                 Edit
               </button>
             )}
+            
+            {/* Delete button remains on the right */}
             {onDelete && (
               <button
                 className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition"
