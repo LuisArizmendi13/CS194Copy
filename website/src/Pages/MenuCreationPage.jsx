@@ -105,7 +105,7 @@ const MenuCreationPage = () => {
         <div className="flex justify-between items-center mt-6">
           <button
             type="button"
-            onClick={() => navigate("/mymenus")}
+            onClick={() => navigate("/menus")}
             className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
           >
             ← Cancel
