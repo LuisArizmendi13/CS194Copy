@@ -6,13 +6,30 @@ router.post("/", async (req, res) => {
   console.log("🧠 AI Insights API called");
 
   try {
+    // Check if the request body exists
+    if (!req.body) {
+      console.log("❌ Request body is missing");
+      return res.status(400).json({ error: "Request body is missing" });
+    }
+
     const { query, data } = req.body;
     console.log("📊 Query received:", query);
-    console.log("📊 Data preview:", data ? "Data present" : "No data provided");
+    console.log("📊 Data keys:", data ? Object.keys(data) : "No data provided");
 
     if (!query) {
       console.log("❌ No query provided");
       return res.status(400).json({ error: "Query is required" });
+    }
+
+    // Verify OpenAI is configured correctly
+    if (!req.app.locals.openai) {
+      console.log("❌ OpenAI instance is not available in req.app.locals");
+      // Fall back to mock response instead of failing
+      const mockResponse = generateMockResponse(query, data);
+      return res.status(200).json({
+        ...mockResponse,
+        source: "Local fallback (OpenAI not configured)",
+      });
     }
 
     // Get restaurant ID from Cognito session (optional, if you want to associate insights with restaurant)
@@ -22,9 +39,12 @@ router.post("/", async (req, res) => {
     console.log("🍽️ Restaurant ID:", restaurantId || "Not available");
 
     // Prepare a comprehensive version of the data for the AI
+    console.log("📊 Preparing data for AI...");
     const enhancedData = prepareDataForAI(data);
+    console.log("📊 Data preparation complete");
 
     // Make request to OpenAI
+    console.log("🤖 Requesting AI insights...");
     const aiResponse = await getAIInsights(req, query, enhancedData);
     console.log("🧠 AI response generated successfully");
 
@@ -32,11 +52,21 @@ router.post("/", async (req, res) => {
     return res.status(200).json(aiResponse);
   } catch (error) {
     console.error("❌ AI Insights API error:", error);
-    return res.status(500).json({
-      error: "Failed to generate insights",
-      details:
-        process.env.NODE_ENV === "development" ? error.message : undefined,
-    });
+    console.error("❌ Error stack:", error.stack);
+
+    // Send a meaningful fallback response instead of just an error
+    const fallbackResponse = {
+      answer:
+        "I was unable to analyze your data due to a technical issue. The local analysis system will be used instead.",
+      recommendations: [
+        "Try a more specific question",
+        "Refresh the page and try again",
+        "Check that your data has been properly loaded",
+      ],
+      source: "Error recovery response",
+    };
+
+    return res.status(200).json(fallbackResponse);
   }
 });
 
