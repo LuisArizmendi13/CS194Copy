@@ -2,7 +2,7 @@
   "name": "website",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:6000",
+  "proxy": "http://localhost:8080", 
   "dependencies": {
     "amazon-cognito-identity-js": "^6.3.12",
     "aws-sdk": "^2.1692.0",
