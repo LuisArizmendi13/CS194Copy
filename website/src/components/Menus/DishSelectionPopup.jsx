@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import useDishes from "../../hooks/useDishes";
-import SelectableDishList from "../SelectableDishList";
+import SelectableDishList from "../Dishes/SelectableDishList";
 
 const DishSelectionPopup = ({ onClose, onSelectDishes, selectedDishes }) => {
   const { user, session } = useAuth();

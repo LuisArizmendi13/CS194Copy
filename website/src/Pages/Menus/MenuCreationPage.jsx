@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserRestaurantId } from "../aws-config";
-import { useAuth } from "../context/AuthContext";
-import FormInput from "../components/Common/FormInput";
-import DishSelectionPopup from "../components/Menus/DishSelectionPopup";
-import MenuNav from "../components/Menus/MenuNav"; 
-import { createMenu } from "../services/menuService";
+import { getUserRestaurantId } from "../../aws-config";
+import { useAuth } from "../../context/AuthContext";
+import FormInput from "../../components/Common/FormInput";
+import DishSelectionPopup from "../../components/Menus/DishSelectionPopup";
+import MenuNav from "../../components/Menus/MenuNav"; 
+import { createMenu } from "../../services/menuService";
 
 const MenuCreationPage = () => {
   const navigate = useNavigate();

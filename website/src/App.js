@@ -11,14 +11,14 @@ import MenusPage from "./Pages/Menus/MenuIndex"; // Acts as router/redirect comp
 import LiveMenuPage from "./Pages/Menus/LiveMenuPage";
 import MyMenusPage from "./Pages/Menus/MyMenusPage";
 import DishesPage from "./Pages/Menus/DishLibraryPage";
-import MenuPage from "./Pages/MenuPage";
-import MenuCreationPage from "./Pages/MenuCreationPage";
+import MenuPage from "./Pages/Menus/MenuPage";
+import MenuCreationPage from "./Pages/Menus/MenuCreationPage";
 import ArchivePage from "./Pages/ArchivePage";
-import SignUp from "./Pages/SignUp";
-import SignIn from "./Pages/SignIn";
+import SignUp from "./Pages/UserAuth/SignUp";
+import SignIn from "./Pages/UserAuth/SignIn";
 import OrdersPage from "./Pages/OrdersPage";
 import AnalyticsPage from "./Pages/AnalyticsPage";
-import ConfirmSignUp from "./Pages/ConfirmSignUp";
+import ConfirmSignUp from "./Pages/UserAuth/ConfirmSignUp";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const ProtectedRoute = ({ element }) => {
