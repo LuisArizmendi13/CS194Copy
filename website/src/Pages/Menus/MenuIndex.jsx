@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import useMenus from "../hooks/useMenus";
+import { useAuth } from "../../context/AuthContext";
+import useMenus from "../../hooks/useMenus";
 
 /**
  * Legacy component that redirects to the appropriate menu sub-page

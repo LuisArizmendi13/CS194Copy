@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import useMenus from "../hooks/useMenus";
-import useDishes from "../hooks/useDishes";
-import MenuForm from "../components/Menus/MenuForm";
-import DishSelectionPopup from "../components/Menus/DishSelectionPopup";
-import DeleteButtonWithConfirmation from "../components/Common/DeleteButtonWithConfirmation";
+import { useAuth } from "../../context/AuthContext";
+import useMenus from "../../hooks/useMenus";
+import useDishes from "../../hooks/useDishes";
+import MenuForm from "../../components/Menus/MenuForm";
+import DishSelectionPopup from "../../components/Menus/DishSelectionPopup";
+import DeleteButtonWithConfirmation from "../../components/Common/DeleteButtonWithConfirmation";
 
 /**
  * Page component for viewing and editing a specific menu

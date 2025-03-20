@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import useMenus from "../hooks/useMenus";
-import InfoBox from "../components/Common/InfoBox";
-import MenuNav from "../components/Menus/MenuNav";
-import DishCard from "../components/Dishes/DishCard";
-import { getCategories, getFilteredDishes } from "../utils/menuHelpers";
+import { useAuth } from "../../context/AuthContext";
+import useMenus from "../../hooks/useMenus";
+import InfoBox from "../../components/Common/InfoBox";
+import MenuNav from "../../components/Menus/MenuNav";
+import DishCard from "../../components/Dishes/DishCard";
+import { getCategories, getFilteredDishes } from "../../utils/menuHelpers";
 
 /**
  * Page component for viewing and managing the live menu

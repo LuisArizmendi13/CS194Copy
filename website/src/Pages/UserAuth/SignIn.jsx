@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
 const SignIn = () => {
@@ -14,7 +14,7 @@ const SignIn = () => {
     try {
       await signIn(email, password);
       console.log("✅ Signed in successfully!");
-      navigate("/dishes", { replace: true }); // ✅ Redirects seamlessly
+      navigate("/", { replace: true }); // ✅ Redirects seamlessly
     } catch (err) {
       setError(err.message);
     }

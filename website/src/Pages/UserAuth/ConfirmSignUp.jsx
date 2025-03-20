@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CognitoUser } from 'amazon-cognito-identity-js';
-import { userPool } from '../aws-config';
+import { userPool } from '../../aws-config';
 import { useNavigate } from 'react-router-dom';
 
 const ConfirmSignUp = () => {

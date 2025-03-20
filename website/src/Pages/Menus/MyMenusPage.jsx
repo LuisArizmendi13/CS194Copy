@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import useMenus from "../hooks/useMenus";
-import useDishes from "../hooks/useDishes";
-import InfoBox from "../components/Common/InfoBox";
-import MenuNav from "../components/Menus/MenuNav";
-import MenuCard from "../components/Menus/MenuCard";
-import UploadMenuPopup from "../components/Menus/UploadMenuPopup";
+import { useAuth } from "../../context/AuthContext";
+import useMenus from "../../hooks/useMenus";
+import useDishes from "../../hooks/useDishes";
+import InfoBox from "../../components/Common/InfoBox";
+import MenuNav from "../../components/Menus/MenuNav";
+import MenuCard from "../../components/Menus/MenuCard";
+import UploadMenuPopup from "../../components/Menus/UploadMenuPopup";
 
 /**
  * Page component for viewing and managing the user's menu collection

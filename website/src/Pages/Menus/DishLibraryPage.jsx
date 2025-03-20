@@ -1,12 +1,12 @@
 // src/Pages/DishesPage.jsx
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import useDishes from "../hooks/useDishes";
-import InfoBox from "../components/Common/InfoBox";
-import MenuNav from "../components/Menus/MenuNav";
-import DishCard from "../components/Dishes/DishCard";
-import AddDishPopup from "../components/Dishes/AddDishPopup";
-import EditDishPopup from "../components/Dishes/EditDishPopup";
+import { useAuth } from "../../context/AuthContext";
+import useDishes from "../../hooks/useDishes";
+import InfoBox from "../../components/Common/InfoBox";
+import MenuNav from "../../components/Menus/MenuNav";
+import DishCard from "../../components/Dishes/DishCard";
+import AddDishPopup from "../../components/Dishes/AddDishPopup";
+import EditDishPopup from "../../components/Dishes/EditDishPopup";
 
 /**
  * Page component for managing dishes in the dish library
