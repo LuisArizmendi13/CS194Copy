@@ -1,18 +1,12 @@
-./
-├── .DS_Store
-├── .env.local
-├── .gitignore
-├── .vscode/
-│   └── launch.json
+.
 ├── README.md
 ├── alanaespositofile 2
-├── client-menu/
-│   ├── .gitignore
+├── client-menu
 │   ├── README.md
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── postcss.config.js
-│   ├── public/
+│   ├── public
 │   │   ├── favicon.ico
 │   │   ├── favicon1.ico
 │   │   ├── index.html
@@ -20,14 +14,14 @@
 │   │   ├── logo512.png
 │   │   ├── manifest.json
 │   │   └── robots.txt
-│   ├── src/
+│   ├── src
 │   │   ├── App.css
 │   │   ├── App.js
-│   │   ├── Pages/
+│   │   ├── Pages
 │   │   │   ├── LiveMenuPage.jsx
 │   │   │   └── OrderPage.jsx
 │   │   ├── aws-config.js
-│   │   ├── components/
+│   │   ├── components
 │   │   │   └── Navbar.jsx
 │   │   ├── index.css
 │   │   ├── index.js
@@ -38,11 +32,9 @@
 ├── package-lock.json
 ├── package.json
 ├── project_structure.txt
-└── website/
-    ├── .DS_Store
-    ├── .gitignore
+└── website
     ├── README.md
-    ├── build/
+    ├── build
     │   ├── asset-manifest.json
     │   ├── favicon.ico
     │   ├── index.html
@@ -50,11 +42,11 @@
     │   ├── logo512.png
     │   ├── manifest.json
     │   ├── robots.txt
-    │   └── static/
-    │       ├── css/
+    │   └── static
+    │       ├── css
     │       │   ├── main.b39a4673.css
     │       │   └── main.b39a4673.css.map
-    │       └── js/
+    │       └── js
     │           ├── 488.0870ce05.chunk.js
     │           ├── 488.0870ce05.chunk.js.map
     │           ├── main.632162a4.js
@@ -63,7 +55,7 @@
     ├── package-lock.json
     ├── package.json
     ├── postcss.config.js
-    ├── public/
+    ├── public
     │   ├── favicon.ico
     │   ├── favicon1.ico
     │   ├── index.html
@@ -72,12 +64,12 @@
     │   ├── manifest.json
     │   ├── robots.txt
     │   └── sales_data_for_archive.json
-    ├── src/
+    ├── src
     │   ├── App.js
-    │   ├── CSS/
+    │   ├── CSS
     │   │   ├── App.css
     │   │   └── index.css
-    │   ├── Pages/
+    │   ├── Pages
     │   │   ├── AnalyticsPage.jsx
     │   │   ├── ArchivePage.jsx
     │   │   ├── ConfirmSignUp.jsx
@@ -92,11 +84,10 @@
     │   │   ├── SignIn.jsx
     │   │   └── SignUp.jsx
     │   ├── aws-config.js
-    │   ├── backend/
-    │   │   ├── .gitignore
+    │   ├── backend
     │   │   ├── aiInsights.js
     │   │   ├── server.js
-    │   │   └── uploads/
+    │   │   └── uploads
     │   │       ├── 217ff4662321b98c659517288d5dc72c
     │   │       ├── 239f54f2e7840a2495ce3f568a3d4560
     │   │       ├── 5fd001ad72c11495af3e654bfa466c25
@@ -105,60 +96,64 @@
     │   │       ├── bf7412fc5c0aa7451fe5effaabfa9c48
     │   │       ├── d9c27e785993e9395efa4fdc8b0b930f
     │   │       └── df84fa57e6e0c47603fa685a8a26a7fc
-    │   ├── classes/
+    │   ├── classes
     │   │   ├── dish.js
     │   │   └── menu.js
-    │   ├── components/
-    │   │   ├── AddDishPopup.jsx
+    │   ├── components
     │   │   ├── AiAssistantBox.jsx
-    │   │   ├── Analytics/
-    │   │   │   ├── Charts/
+    │   │   ├── Analytics
+    │   │   │   ├── Charts
     │   │   │   ├── WeatherPerformanceChart.jsx
     │   │   │   ├── processSalesData.js
     │   │   │   ├── processSalesData.test.js
     │   │   │   └── sales_data.json
-    │   │   ├── Calendar/
+    │   │   ├── Calendar
     │   │   │   ├── calendardisplay.html
     │   │   │   └── calendardisplay.jsx
-    │   │   ├── DeleteButtonWithConfirmation.jsx
-    │   │   ├── DishBox.jsx
-    │   │   ├── DishList.jsx
-    │   │   ├── FormInput.jsx
-    │   │   ├── GeneratedMenu.jsx
-    │   │   ├── LiveDishBox.jsx
-    │   │   ├── LiveDishList.jsx
-    │   │   ├── Menus/
+    │   │   ├── Common
+    │   │   │   ├── DeleteButtonWithConfirmation.jsx
+    │   │   │   ├── FormInput.jsx
+    │   │   │   └── InfoBox.jsx
+    │   │   ├── Dishes
+    │   │   │   ├── AddDishPopup.jsx
+    │   │   │   ├── DishBox.jsx
+    │   │   │   ├── DishCard.jsx
+    │   │   │   ├── DishForm.jsx
+    │   │   │   └── EditDishPopup.jsx
+    │   │   ├── Menus
     │   │   │   ├── DishSelectionPopup.jsx
-    │   │   │   ├── MenuBox.jsx
-    │   │   │   ├── MenuList.jsx
-    │   │   │   ├── MyMenusSection.jsx
-    │   │   │   └── NewMenuButton.jsx
+    │   │   │   ├── GeneratedMenu.jsx
+    │   │   │   ├── MenuCard.jsx
+    │   │   │   ├── MenuForm.jsx
+    │   │   │   ├── MenuNav.jsx
+    │   │   │   └── UploadMenuPopup.jsx
     │   │   ├── Navbar.jsx
     │   │   ├── NewDishButton.jsx
-    │   │   ├── OldPageVersions/
+    │   │   ├── OldPageVersions
     │   │   │   ├── DishDetailsPage.jsx
     │   │   │   ├── DishesPage.jsx
     │   │   │   └── DishesPageold.jsx
     │   │   ├── QRCodeComponent.jsx
-    │   │   ├── SelectableDishList.jsx
-    │   │   └── UploadMenuPopup.jsx
-    │   ├── constants/
+    │   │   └── SelectableDishList.jsx
+    │   ├── constants
     │   │   ├── names.js
     │   │   └── websites.js
-    │   ├── context/
+    │   ├── context
     │   │   └── AuthContext.js
-    │   ├── hooks/
+    │   ├── hooks
     │   │   ├── useDishes.js
     │   │   ├── useFetchMenus.js
     │   │   └── useMenus.js
     │   ├── index.js
     │   ├── reportWebVitals.js
-    │   ├── services/
+    │   ├── services
     │   │   ├── dishService.js
     │   │   └── menuService.js
-    │   └── utils/
+    │   └── utils
     │       ├── auth.js
     │       └── menuHelpers.js
-    └── tailwind.config.js
+    ├── tailwind.config.js
+    ├── website__structure.txt
+    └── website_structure.txt
 
-30 directories, 132 files
+31 directories, 126 files

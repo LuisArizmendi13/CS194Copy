@@ -7,10 +7,10 @@ import {
 } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
 import HomePage from "./Pages/HomePage";
-import MenusPage from "./Pages/MenusPage"; // Acts as router/redirect component
-import LiveMenuPage from "./Pages/LiveMenuPage";
-import MyMenusPage from "./Pages/MyMenusPage";
-import DishesPage from "./Pages/DishesPage";
+import MenusPage from "./Pages/Menus/MenuIndex"; // Acts as router/redirect component
+import LiveMenuPage from "./Pages/Menus/LiveMenuPage";
+import MyMenusPage from "./Pages/Menus/MyMenusPage";
+import DishesPage from "./Pages/Menus/DishLibraryPage";
 import MenuPage from "./Pages/MenuPage";
 import MenuCreationPage from "./Pages/MenuCreationPage";
 import ArchivePage from "./Pages/ArchivePage";
