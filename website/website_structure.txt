@@ -38,17 +38,19 @@
 │   ├── Pages
 │   │   ├── AnalyticsPage.jsx
 │   │   ├── ArchivePage.jsx
-│   │   ├── ConfirmSignUp.jsx
-│   │   ├── DishesPage.jsx
 │   │   ├── HomePage.jsx
-│   │   ├── LiveMenuPage.jsx
-│   │   ├── MenuCreationPage.jsx
-│   │   ├── MenuPage.jsx
-│   │   ├── MenusPage.jsx
-│   │   ├── MyMenusPage.jsx
+│   │   ├── Menus
+│   │   │   ├── DishLibraryPage.jsx
+│   │   │   ├── LiveMenuPage.jsx
+│   │   │   ├── MenuCreationPage.jsx
+│   │   │   ├── MenuIndex.jsx
+│   │   │   ├── MenuPage.jsx
+│   │   │   └── MyMenusPage.jsx
 │   │   ├── OrdersPage.jsx
-│   │   ├── SignIn.jsx
-│   │   └── SignUp.jsx
+│   │   └── UserAuth
+│   │       ├── ConfirmSignUp.jsx
+│   │       ├── SignIn.jsx
+│   │       └── SignUp.jsx
 │   ├── aws-config.js
 │   ├── backend
 │   │   ├── aiInsights.js
@@ -91,7 +93,8 @@
 │   │   │   ├── DishBox.jsx
 │   │   │   ├── DishCard.jsx
 │   │   │   ├── DishForm.jsx
-│   │   │   └── EditDishPopup.jsx
+│   │   │   ├── EditDishPopup.jsx
+│   │   │   └── SelectableDishList.jsx
 │   │   ├── Menus
 │   │   │   ├── DishSelectionPopup.jsx
 │   │   │   ├── GeneratedMenu.jsx
@@ -100,13 +103,11 @@
 │   │   │   ├── MenuNav.jsx
 │   │   │   └── UploadMenuPopup.jsx
 │   │   ├── Navbar.jsx
-│   │   ├── NewDishButton.jsx
 │   │   ├── OldPageVersions
 │   │   │   ├── DishDetailsPage.jsx
 │   │   │   ├── DishesPage.jsx
 │   │   │   └── DishesPageold.jsx
-│   │   ├── QRCodeComponent.jsx
-│   │   └── SelectableDishList.jsx
+│   │   └── QRCodeComponent.jsx
 │   ├── constants
 │   │   ├── names.js
 │   │   └── websites.js
@@ -114,7 +115,6 @@
 │   │   └── AuthContext.js
 │   ├── hooks
 │   │   ├── useDishes.js
-│   │   ├── useFetchMenus.js
 │   │   └── useMenus.js
 │   ├── index.js
 │   ├── reportWebVitals.js
@@ -125,7 +125,6 @@
 │       ├── auth.js
 │       └── menuHelpers.js
 ├── tailwind.config.js
-├── website__structure.txt
 └── website_structure.txt
 
-25 directories, 104 files
+27 directories, 101 files

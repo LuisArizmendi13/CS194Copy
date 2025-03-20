@@ -1,0 +1,31 @@
+.
+├── README.md
+├── client_menu_structure.txt
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── public
+│   ├── favicon.ico
+│   ├── favicon1.ico
+│   ├── index.html
+│   ├── logo192.png
+│   ├── logo512.png
+│   ├── manifest.json
+│   └── robots.txt
+├── src
+│   ├── App.css
+│   ├── App.js
+│   ├── Pages
+│   │   ├── LiveMenuPage.jsx
+│   │   └── OrderPage.jsx
+│   ├── aws-config.js
+│   ├── components
+│   │   └── Navbar.jsx
+│   ├── index.css
+│   ├── index.js
+│   ├── logo.svg
+│   ├── reportWebVitals.js
+│   └── setupTests.js
+└── tailwind.config.js
+
+5 directories, 24 files
